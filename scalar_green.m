@@ -1,4 +1,3 @@
-
 function [G] = scalar_green(source,test,params, inside)
 
 if (inside)
