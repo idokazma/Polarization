@@ -2,7 +2,7 @@
 
 
 
-[E_SOL_st_MoM, mean_E_MoM,mean_I_MoM,effective_radius, alpha_MoM, mean_E0_MoM] = MoM_tri_1_6(params);
+[E_SOL_st_MoM, mean_E_MoM,mean_I_MoM,effective_radius, alpha_MoM, mean_E0_MoM] = MoM(params);
 alpha_MoM
 % mean_E_MoM
 % mean_I_MoM
