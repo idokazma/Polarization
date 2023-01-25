@@ -93,7 +93,7 @@ if (false)
         %
     end
     disp ('End Eval Symbolic');
-    toc
+    
 end
 % % % % %
 % % % % % H_inc_x = H_inc(:,1);
@@ -106,12 +106,12 @@ end
 
 if (params.is_plane_wave == 1)
     
-    tic
+    
     for i = 1:length(test_point_total)
         E_inc(i,:) = double(subs(params.Esym,[xsym,ysym,k0sym] ,[test_point_total(i,1),test_point_total(i,2),k0]));
         H_inc(i,:) = double(subs(params.Hsym,[xsym,ysym,zsym,k0sym] ,[test_point_total(i,1),test_point_total(i,2),0,k0]));
     end
-    toc
+    
     H_inc_x = H_inc(:,1);
     H_inc_y = H_inc(:,2);
     H_inc_z = H_inc(:,3);
@@ -121,7 +121,7 @@ if (params.is_plane_wave == 1)
     E_inc_z = E_inc(:,3);
     
 else
-    tic
+    
     
     if (params.hit_plane == 0)
         
@@ -153,7 +153,7 @@ else
         H_inc_z = 0*H_inc_green_x;
         
     end
-    toc
+    
 end
 
 
@@ -236,7 +236,7 @@ Y = params.Y;
 loc_line = [X(:),Y(:)]';
 E_sol = zeros(1,length(loc_line));
 
-grid_inside_each_sca = ((X).^2 +(Y).^2)<=0.99*R*R;
+grid_inside_each_sca = ((X).^2 +(Y).^2)<=0.999999*R*R;
 E_sol_final = zeros(length(params.sca_x),length(X(grid_inside_each_sca)));
 Hx_sol_final = zeros(length(params.sca_x),length(X(grid_inside_each_sca)));
 Hy_sol_final = zeros(length(params.sca_x),length(X(grid_inside_each_sca)));
@@ -303,7 +303,7 @@ for mm = 1 : length(params.sca_x)
     H_inc_x_inside_sca(mm,:) = H_inc_green_x_inside(:);
     H_inc_y_inside_sca(mm,:) = H_inc_green_y_inside(:);
 end
-toc
+
 % E_inc_x_inside_sca = 0;
 % E_inc_y_inside_sca = E_inc_y;
 
@@ -313,6 +313,13 @@ mean_Hy_fil = mean(Hy_sol_final,2);
 
 mean_Hx_inc = mean(H_inc_x_inside_sca,2);
 mean_Hy_inc = mean(H_inc_y_inside_sca,2);
+
+% if abs(mean_Hx_inc) < 1e-20
+%     mean_Hx_inc = 0;
+% end
+% if abs(mean_Hy_inc) < 1e-20
+%     mean_Hy_inc = 0;
+% end
 mean_Ez_inc = mean(E_inc_z_inside_sca,2);
 
 % % % mean_Ez_inc = scalar_green([params.source_loc_x;params.source_loc_y],[params.sca_x,params.sca_y]',params.n_out,params.k0,params.c,params.OMEGA);
@@ -335,6 +342,9 @@ for tt = 1 : length(Hy_sol_final)
     rotation_current_H(tt) =  -H_inc_x_inside_sca(tt)*in_loc_line(1,tt) -  H_inc_y_inside_sca(tt)*in_loc_line(2,tt);
     Jm_fil_x(tt) = (E_sol_final(tt) - E_inc_z_inside_sca(tt))*in_loc_line(1,tt);
     Jm_fil_y(tt) = (E_sol_final(tt) - E_inc_z_inside_sca(tt))*in_loc_line(2,tt);
+    
+%     Jm_fil_x(tt) = (E_sol_final(tt))*in_loc_line(1,tt);
+%     Jm_fil_y(tt) = (E_sol_final(tt))*in_loc_line(2,tt);
 end
 %
 % final_current_H  = -mean_Hx_fil * params.sca_x - mean_Hy_fil * params.sca_y;
@@ -346,14 +356,14 @@ H_current_add = (final_current_H-rotation_current_H);
 
 
 
-fprintf('\n ----------- H_diff is:');
-sum(H_current_add)
-% mean_Im_fil_x = -1i*params.omega*params.OMEGA* params.sca_x * (mean(E_sol_final) - mean_Ez_inc) *pi*R*R;
-% mean_Im_fil_y = -1i*params.omega*params.OMEGA* params.sca_y * (mean(E_sol_final)  - mean_Ez_inc) *pi*R*R;
+% fprintf('\n ----------- H_diff is:');
+% sum(H_current_add)
+mean_Im_fil_x = -1i*params.omega*params.OMEGA/(params.c^2)* params.sca_x * (mean(E_sol_final) - mean_Ez_inc) *pi*R*R;
+mean_Im_fil_y = -1i*params.omega*params.OMEGA/(params.c^2)* params.sca_y * (mean(E_sol_final)  - mean_Ez_inc) *pi*R*R;
 
-mean_Im_fil_x = -1i*params.omega*params.OMEGA/(params.c^2) * mean(Jm_fil_x) *pi*R*R;
-mean_Im_fil_y = -1i*params.omega*params.OMEGA/(params.c^2) * mean(Jm_fil_y) *pi*R*R;
-
+% mean_Im_fil_x = -1i*params.omega*params.OMEGA/(params.c^2) * mean(Jm_fil_x) *pi*R*R;
+% mean_Im_fil_y = -1i*params.omega*params.OMEGA/(params.c^2) * mean(Jm_fil_y) *pi*R*R;
+% 
 
 
 mean_I_fil = mean(E_sol_final)*(-1i*params.omega*params.e0*(params.er_in-params.er_out)*pi*R*R) + 1i*params.omega/(params.c^2)*params.OMEGA*mean(H_current_add)*pi*R*R;

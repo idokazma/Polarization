@@ -25,10 +25,10 @@ params.hit_plane=0;
 
 % geometric parameters of the grid for calculation.
 
-params.len_n = 901;
-params.wid_n = 901;
-params.len = 1*0.25e-6;
-params.wid = 1*0.25e-6;
+params.len_n = 61;
+params.wid_n = 61;
+params.len = radius_vec*params.lambda*2.1;
+params.wid = radius_vec*params.lambda*2.1;
 
 params.plave_wave_direction = 1; %1 for x, 0 for y;
 
@@ -44,12 +44,15 @@ end
 generate_parameters;
 
 params.OMEGA_vec = 1*params.omega*(0:1e-5:3e-5);
-params.shift_vec = 1*[5,10,20] * params.lambda;
+params.shift_vec = 1*[1,2,4,10,20,50,100,200] * params.lambda;
+params.shift_vec = 1*[1,2,4,8,16,32,64,128] * params.lambda;
 
 %% Generate sources locations
-dis = 1000; 
-sources = dis *lambda * exp(1i*linspace(0,2*pi, 5));
+dis = 200.345; 
+sources = dis *lambda * exp(1i*2*pi*linspace(0,1, 5));
 sources = sources(1:end-1);
+
+
 
 now_str = datestr(now,'mmmm_dd_yyyy_HH_MM_SS');
 Run_name = ['RUN_' , now_str];
@@ -57,7 +60,7 @@ Run_name = ['RUN_' , now_str];
 %% START SIMULATION
 % Hitting Field
 counter = 0;
-total_runs = length(params.shift_vec)*length(params.shift_vec)*length(sources);
+total_runs = length(params.shift_vec)*length(params.OMEGA_vec)*length(sources);
 for t = 1:length(sources) % for every source
     
     for i = 1:length(params.shift_vec) % for every shift of scatterer location
@@ -73,8 +76,8 @@ for t = 1:length(sources) % for every source
             params.sca_x = params.lambda*[ 0 ] + 1*params.shift_vec(i);
             params.sca_y = params.lambda*[ 0 ] + 0*params.shift_vec(i);
             
-            params.source_loc_x = real(sources(t));
-            params.source_loc_y = imag(sources(t));
+            params.source_loc_x = real(sources(t))+params.sca_x;
+            params.source_loc_y = imag(sources(t))+params.sca_y;
 
             counter=counter+1;
             formatSpec = 'Calculating...Overall: %2.1f%% Shift: %2.1f%%, Omega: %2.1f%%, Source %2.1f%%.\n';
@@ -87,16 +90,12 @@ for t = 1:length(sources) % for every source
             end
 
             if (params.tm)
-                tic
                 EVAL_TM_RESULTS;
-                toc
             end
             
             if (params.te)
-                tic
                 params.radius = radius_vec*lambda;
                 EVAL_TE_RESULTS;
-                toc
             end
         end
     end

@@ -1,4 +1,3 @@
-clear all;
 
 N=100;
 GoldenRatioS=1.5+0.5*sqrt(5);   % the square of the golden ratio

@@ -1,5 +1,6 @@
 %fields only
 clear Iz Iez Hx Hy Ez Im_x Im_y Ez_sol Hx_sol Hy_sol field_current temp_field_current_1
+stm = []
 for rho = 1 : size(field_current_mat_output,1)
     for OMEGA_r = 1 : size(field_current_mat_output,2)
         for sce = 1 :  size(field_current_mat_output,3)
@@ -18,7 +19,14 @@ for rho = 1 : size(field_current_mat_output,1)
         Hx_sol(sce) = temp_field_current_1(9);
         Hy_sol(sce) = temp_field_current_1(10);
 
+
+        Ez_inc_mom(sce) = E_SOL_st_MoM_MEAN_PLANE_E0{rho,OMEGA_r,sce};
+        Ez_sol_mom(sce) = E_SOL_st_MoM_MEAN_PLANE{rho,OMEGA_r,sce};
+
         end
+        
+        stm = [stm; (-params.omega^2)*params.mu0*(params.er_in-params.er_out)*params.e0*(Ez_sol-Ez)-2*(-params.omega^2)*params.mu0/(params.c^2)*params.OMEGA_vec(OMEGA_r)*params.shift_vec(rho)*(Hy_sol-Hy)]
+ 
         
         lineq_for_x = transpose([Hx ; Hy ;Ez]);
         a=linsolve((lineq_for_x),transpose([Ez_sol]));
@@ -26,6 +34,11 @@ for rho = 1 : size(field_current_mat_output,1)
         alpha_ezhy(rho,OMEGA_r) = a(2);
         alpha_ezez(rho,OMEGA_r) = a(3);
         
+        lineq_for_x = transpose([Hx ; Hy ;Ez_inc_mom]);
+        a=linsolve((lineq_for_x),transpose([Ez_sol_mom]));
+        alpha_ezhx_mom(rho,OMEGA_r) = a(1);
+        alpha_ezhy_mom(rho,OMEGA_r) = a(2);
+        alpha_ezez_mom(rho,OMEGA_r) = a(3);
 %         lineq_for_x = [Hx_1 , Hy_1 ,Ez_1; Hx_2 ,Hy_2, Ez_2; Hx_3 ,Hy_3, Ez_3];
 %         a=inv(lineq_for_x)*([Iz_1;Iz_2;Iz_3]);
 %         alpha_ezhx(rho,OMEGA_r) = a(1);
@@ -63,6 +76,30 @@ for rho = 1 : size(field_current_mat_output,1)
         alpha_hyhy(rho,OMEGA_r) = a(2);
         alpha_hyez(rho,OMEGA_r) = a(3);
         
+
+        
+        fact_a = -1i*params.omega*(params.er_in-params.er_out)*params.e0 * params.radius^2*pi;
+        fact_b = -1i*params.omega*(1/params.c^2)*params.OMEGA_vec(OMEGA_r)*params.shift_vec(rho)*params.radius^2*pi;
+        
+        alpha_curr_ezjz(rho,OMEGA_r) = fact_a*alpha_ezez(rho,OMEGA_r)+fact_b*alpha_hxez(rho,OMEGA_r);
+        alpha_curr_hyjz(rho,OMEGA_r) = fact_a*alpha_ezhy(rho,OMEGA_r)+fact_b*alpha_hxhy(rho,OMEGA_r);
+        alpha_curr_hxjz(rho,OMEGA_r) = fact_a*alpha_ezhx(rho,OMEGA_r)+fact_b*(alpha_hxhx(rho,OMEGA_r)-1);
+
+        
+        fact_am = -1i*params.omega*(1/params.c^2)*params.OMEGA_vec(OMEGA_r)*params.shift_vec(rho)* params.radius^2*pi;
+        fact_bm = -1i*params.omega*params.radius^2*pi*params.mu0*(params.mr_in - params.mr_out);
+        
+
+        
+        alpha_curr_ezjx(rho,OMEGA_r) = fact_am*(alpha_ezez(rho,OMEGA_r)-1)+fact_bm*alpha_hxez(rho,OMEGA_r);
+        alpha_curr_hyjx(rho,OMEGA_r) = fact_am*(alpha_ezhy(rho,OMEGA_r))+fact_bm*alpha_hxhy(rho,OMEGA_r);
+        alpha_curr_hxjx(rho,OMEGA_r) = fact_am*(alpha_ezhx(rho,OMEGA_r))+fact_bm*(alpha_hxhx(rho,OMEGA_r)-1);
+
+        alpha_curr_ezjy(rho,OMEGA_r) = 0*fact_am*alpha_hyez(rho,OMEGA_r)+fact_bm*alpha_hxez(rho,OMEGA_r);
+        alpha_curr_hyjy(rho,OMEGA_r) = 0*fact_am*(alpha_hyhy(rho,OMEGA_r)-1)+fact_bm*alpha_hxhy(rho,OMEGA_r);
+        alpha_curr_hxjy(rho,OMEGA_r) = 0*fact_am*alpha_hyhx(rho,OMEGA_r)+fact_bm*(alpha_hxhx(rho,OMEGA_r)-1);
+
+        
 %         %% fields alpha
 %         a=linsolve(lineq_for_x,[Hx_sol_1;Hx_sol_2;Hx_sol_3]);
 %         alpha_hxhx(rho,OMEGA_r) = a(1);
@@ -95,6 +132,10 @@ for rho = 1 : size(field_current_mat_output,1)
         
 %         lineq_for_x = [Ez_1;  Ez_2;  Ez_3];
 %         alpha_TM(rho,OMEGA_r)=linsolve(lineq_for_x,[Ez_sol_1;Ez_sol_2;Ez_sol_3]);
+        
+         lineq_for_x = transpose([Ez_inc_mom]);
+        a=linsolve((lineq_for_x),transpose([Ez_sol_mom]));
+        alpha_TM_MoM(rho,OMEGA_r) = a;
         
          lineq_for_x = transpose([Ez]);
         a=linsolve((lineq_for_x),transpose([Ez_sol]));
@@ -369,9 +410,79 @@ title(lgd1,'\rho_c [\lambda]')
 % 
 % 
 % 
+
+
+figure;
+subplot(3,3,9); plot(params.OMEGA_vec/params.omega,abs(alpha_ezez-alpha_ezez(1)),'x-','LineWidth',2); title ('abs($$\alpha^{ee}_{zz}$$)','Interpreter','Latex', 'FontSize', 16); xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+subplot(3,3,8); plot(params.OMEGA_vec/params.omega,abs(alpha_ezhy),'x-','LineWidth',2); title ('abs($$\alpha^{em}_{z\theta}$$)','Interpreter','Latex', 'FontSize', 16); xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+subplot(3,3,7); plot(params.OMEGA_vec/params.omega,abs(alpha_ezhx),'x-','LineWidth',2); title ('abs($$\alpha^{em}_{z\rho}$$)','Interpreter','Latex', 'FontSize', 16);xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+subplot(3,3,3); plot(params.OMEGA_vec/params.omega,abs(alpha_hxez),'x-','LineWidth',2); title ('abs($$\alpha^{me}_{\rho z}$$)','Interpreter','Latex', 'FontSize', 16);xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+subplot(3,3,6); plot(params.OMEGA_vec/params.omega,abs(alpha_hyez),'x-','LineWidth',2); title ('abs($$\alpha^{me}_{\theta z}$$)','Interpreter','Latex', 'FontSize', 16);xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+subplot(3,3,1); plot(params.OMEGA_vec/params.omega,abs(alpha_hxhx),'x-','LineWidth',2); title ('abs($$\alpha^{mm}_{\rho\rho}$$)','Interpreter','Latex', 'FontSize', 16); xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+subplot(3,3,2); plot(params.OMEGA_vec/params.omega,abs(alpha_hxhy),'x-','LineWidth',2); title ('abs($$\alpha^{mm}_{\rho\theta}$$)','Interpreter','Latex', 'FontSize', 16); xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+subplot(3,3,4); plot(params.OMEGA_vec/params.omega,abs(alpha_hyhx),'x-','LineWidth',2); title ('abs($$\alpha^{mm}_{\theta\rho}$$)','Interpreter','Latex', 'FontSize', 16); xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+subplot(3,3,5); plot(params.OMEGA_vec/params.omega,abs(alpha_hyhy),'x-','LineWidth',2); title ('abs($$\alpha^{mm}_{\theta\theta}$$)','Interpreter','Latex', 'FontSize', 16); xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+
+lgd1 = legend (num2str(params.shift_vec'/params.lambda));
+
+title(lgd1,'\rho_c [\lambda]')
+
 figure;
 plot(params.OMEGA_vec/params.omega, abs(alpha_TM),'x-'); hold on;
 figure;
 plot(params.OMEGA_vec/params.omega, abs(alpha_TM_MoM),'d-');
 grid on;
+
+figure;
+subplot(2,3,3); plot(params.OMEGA_vec/params.omega,abs(alpha_ezez-alpha_ezez(1,:)),'x-','LineWidth',2); title ('Fil abs($$\alpha^{ee}_{zz}$$)','Interpreter','Latex', 'FontSize', 16); xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+subplot(2,3,2); plot(params.OMEGA_vec/params.omega,abs(alpha_ezhy),'x-','LineWidth',2); title ('Fil abs($$\alpha^{em}_{z\theta}$$)','Interpreter','Latex', 'FontSize', 16); xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+subplot(2,3,1); plot(params.OMEGA_vec/params.omega,abs(alpha_ezhx),'x-','LineWidth',2); title ('Fil abs($$\alpha^{em}_{z\rho}$$)','Interpreter','Latex', 'FontSize', 16);xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+
+
+        
+subplot(2,3,6); plot(params.OMEGA_vec/params.omega,abs(alpha_ezez_mom-alpha_ezez_mom(1,:)),'x-','LineWidth',2); title ('MoM abs($$\alpha^{ee}_{zz}$$)','Interpreter','Latex', 'FontSize', 16); xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+subplot(2,3,5); plot(params.OMEGA_vec/params.omega,abs(alpha_ezhy_mom),'x-','LineWidth',2); title ('MoM abs($$\alpha^{em}_{z\theta}$$)','Interpreter','Latex', 'FontSize', 16); xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+subplot(2,3,4); plot(params.OMEGA_vec/params.omega,abs(alpha_ezhx_mom),'x-','LineWidth',2); title ('MoM abs($$\alpha^{em}_{z\rho}$$)','Interpreter','Latex', 'FontSize', 16);xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+       
+lgd1 = legend (num2str(params.shift_vec'/params.lambda));
+
+title(lgd1,'\rho_c [\lambda]')
+
+
+figure;
+subplot(2,3,3); plot(params.OMEGA_vec/params.omega,abs(alpha_ezez),'x-','LineWidth',2); title ('Fil abs($$\alpha^{ee}_{zz}$$)','Interpreter','Latex', 'FontSize', 16); xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+subplot(2,3,2); plot(params.OMEGA_vec/params.omega,abs(alpha_ezhy),'x-','LineWidth',2); title ('Fil abs($$\alpha^{em}_{z\theta}$$)','Interpreter','Latex', 'FontSize', 16); xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+subplot(2,3,1); plot(params.OMEGA_vec/params.omega,abs(alpha_ezhx),'x-','LineWidth',2); title ('Fil abs($$\alpha^{em}_{z\rho}$$)','Interpreter','Latex', 'FontSize', 16);xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+
+
+        
+subplot(2,3,6); plot(params.OMEGA_vec/params.omega,abs(alpha_ezez_mom),'x-','LineWidth',2); title ('MoM abs($$\alpha^{ee}_{zz}$$)','Interpreter','Latex', 'FontSize', 16); xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+subplot(2,3,5); plot(params.OMEGA_vec/params.omega,abs(alpha_ezhy_mom),'x-','LineWidth',2); title ('MoM abs($$\alpha^{em}_{z\theta}$$)','Interpreter','Latex', 'FontSize', 16); xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+subplot(2,3,4); plot(params.OMEGA_vec/params.omega,abs(alpha_ezhx_mom),'x-','LineWidth',2); title ('MoM abs($$\alpha^{em}_{z\rho}$$)','Interpreter','Latex', 'FontSize', 16);xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+       
+lgd1 = legend (num2str(params.shift_vec'/params.lambda));
+
+
+
+
+title(lgd1,'\rho_c [\lambda]')
+
+figure; plot(params.OMEGA_vec/params.omega,reshape(abs(stm(:,5)),5,8));xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+figure; plot(params.OMEGA_vec/params.omega,reshape(abs(stm(:,3)),5,8));xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+
+figure; plot(params.OMEGA_vec/params.omega,reshape(abs(stm(:,1)),5,8));xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+
+
+
+
+figure;
+subplot(3,3,9); plot(params.OMEGA_vec/params.omega,abs(alpha_curr_ezjz),'x-','LineWidth',2); title ('abs($$\alpha^{ez}_{jz}$$)','Interpreter','Latex', 'FontSize', 16); xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+subplot(3,3,8); plot(params.OMEGA_vec/params.omega,abs(alpha_curr_hyjz),'x-','LineWidth',2); title ('abs($$\alpha^{h\theta}_{jz}$$)','Interpreter','Latex', 'FontSize', 16); xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+subplot(3,3,7); plot(params.OMEGA_vec/params.omega,abs(alpha_curr_hxjz),'x-','LineWidth',2); title ('abs($$\alpha^{h\rho}_{jz}$$)','Interpreter','Latex', 'FontSize', 16);xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+subplot(3,3,6); plot(params.OMEGA_vec/params.omega,abs(alpha_curr_ezjy),'x-','LineWidth',2); title ('abs($$\alpha^{ez}_{j\theta}$$)','Interpreter','Latex', 'FontSize', 16);xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+subplot(3,3,1); plot(params.OMEGA_vec/params.omega,abs(alpha_curr_hxjx),'x-','LineWidth',2); title ('abs($$\alpha^{h\rho}_{j\rho}$$)','Interpreter','Latex', 'FontSize', 16);xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+subplot(3,3,5); plot(params.OMEGA_vec/params.omega,abs(alpha_curr_hyjy),'x-','LineWidth',2); title ('abs($$\alpha^{h\theta}_{j\theta}$$)','Interpreter','Latex', 'FontSize', 16); xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+subplot(3,3,4); plot(params.OMEGA_vec/params.omega,abs(alpha_curr_hxjy),'x-','LineWidth',2); title ('abs($$\alpha^{h\rho}_{j\theta}$$)','Interpreter','Latex', 'FontSize', 16); xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+subplot(3,3,2); plot(params.OMEGA_vec/params.omega,abs(alpha_curr_hyjx),'x-','LineWidth',2); title ('abs($$\alpha^{h\theta}_{j\rho}$$)','Interpreter','Latex', 'FontSize', 16); xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
+subplot(3,3,3); plot(params.OMEGA_vec/params.omega,abs(alpha_curr_ezjx),'x-','LineWidth',2); title ('abs($$\alpha^{ez}_{j\rho}$$)','Interpreter','Latex', 'FontSize', 16); xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
 

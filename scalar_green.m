@@ -23,7 +23,8 @@ rot = exp(1i*k0*OMEGA/c*(xsource.*ytest-ysource.*xtest));
 rr =sqrt((xtest-xsource).*(xtest-xsource)+(ytest-ysource).*(ytest-ysource));
 
 fact = -omega*mu*Iz/4;
-Gst = fact* besselh(0,1,k0*n*rr);
+% Gst = fact* besselh(0,1,k0*n*rr);
+Gst = 1i/4*besselh(0,1,k0*n*rr);
 
 G = Gst.*rot;
 

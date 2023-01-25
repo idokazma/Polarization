@@ -3,7 +3,7 @@ clear Iz Iez Hx Hy Ez Im_x Im_y Ez_sol Hx_sol Hy_sol field_current temp_field_cu
 
 for rho = 1 : size(field_current_mat_output,1)
     for OMEGA_r = 1 : size(field_current_mat_output,2)
-        for sce = 1 : size(field_current_mat_output,3)/2
+        for sce = 1 : size(field_current_mat_output,3)
         field_current{rho,OMEGA_r,sce} = field_current_mat_output{rho,OMEGA_r,sce};
         temp_field_current_1 = cell2mat(field_current{rho,OMEGA_r,sce});
 
@@ -27,6 +27,7 @@ for rho = 1 : size(field_current_mat_output,1)
         alpha_ezhy(rho,OMEGA_r) = a(2);
         alpha_ezez(rho,OMEGA_r) = a(3);
         
+        pass=0;
 %         lineq_for_x = [Hx_1 , Hy_1 ,Ez_1; Hx_2 ,Hy_2, Ez_2; Hx_3 ,Hy_3, Ez_3];
 %         a=inv(lineq_for_x)*([Iz_1;Iz_2;Iz_3]);
 %         alpha_ezhx(rho,OMEGA_r) = a(1);
@@ -63,7 +64,7 @@ for rho = 1 : size(field_current_mat_output,1)
         alpha_hyhx(rho,OMEGA_r) = a(1);
         alpha_hyhy(rho,OMEGA_r) = a(2);
         alpha_hyez(rho,OMEGA_r) = a(3);
-        
+        pass=0;
 %         %% fields alpha
 %         a=linsolve(lineq_for_x,[Hx_sol_1;Hx_sol_2;Hx_sol_3]);
 %         alpha_hxhx(rho,OMEGA_r) = a(1);

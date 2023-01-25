@@ -62,10 +62,10 @@ params.n_out = sqrt(params.mr_out*params.er_out);
 
 
     %    Parameters of Filamets;
-    params.R_out=1.2; %params.radius*param.R_out
-    params.R_in=0.8;
+    params.R_out=1.1; %params.radius*param.R_out
+    params.R_in=0.9;
     
-    params.N_filaments=60; %on each side
+    params.N_filaments=40; %on each side
     params.N_testpoints=200;%must be >=param.N_filaments
 
     params.max_m = 50;

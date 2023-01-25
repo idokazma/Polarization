@@ -46,21 +46,41 @@ rr =sqrt((xtest-xsource).*(xtest-xsource)+(ytest-ysource).*(ytest-ysource));
 % Gy_1 = (k0*n*(xtest-xsource)./(rr)).*besselh(1,1,k0*n*rr);
 % Gy_2 = k0^2*OMEGA/omega*(ysource-ytest).*besselh(0,1,k0*n*rr);
 
+fact = 1/(1i*omega*mu);
 
 fact_1 = 1i/4*k0*n;
 fact_2 = OMEGA*omega/(4*c*c);
 
-Gx_1 = ((ysource-ytest)./(rr)).*besselh(1,1,k0*n*rr);
-Gx_2 = (xtest-xsource).*besselh(0,1,k0*n*rr);
+fact_n = 1i*omega*OMEGA/(c*c);
 
-Gy_1 = (-(xsource-xtest)./(rr)).*besselh(1,1,k0*n*rr);
-Gy_2 = (ytest-ysource).*besselh(0,1,k0*n*rr);
+Gst = 1i/4*besselh(0,1,k0*n*rr);
+Gst_d = k0*n*1i/4*besselh(1,1,k0*n*rr);
 
-Gx = fact_1 * Gx_1 + fact_2 * Gx_2;
-Gy = fact_1 * Gy_1 + fact_2 * Gy_2;
+Gx_1 = ((ysource-ytest)./(rr)).*Gst_d;
+Gx_2 = -(xtest-xsource).*Gst.*fact_n;
 
-Gx = Gx .* rot ;
-Gy = Gy .* rot ;
+Gy_1 = (-(xsource-xtest)./(rr)).*Gst_d;
+Gy_2 = -(ytest-ysource).*Gst.*fact_n;
+
+Gx = Gx_1 + Gx_2;
+Gy = Gy_1 + Gy_2;
+
+Gx = Gx .* rot * fact ;
+Gy = Gy .* rot * fact ;
+
+
+
+% Gx_1 = ((ysource-ytest)./(rr)).*besselh(1,1,k0*n*rr);
+% Gx_2 = (xtest-xsource).*besselh(0,1,k0*n*rr);
+% 
+% Gy_1 = (-(xsource-xtest)./(rr)).*besselh(1,1,k0*n*rr);
+% Gy_2 = (ytest-ysource).*besselh(0,1,k0*n*rr);
+% 
+% Gx = fact_1 * Gx_1 + fact_2 * Gx_2;
+% Gy = fact_1 * Gy_1 + fact_2 * Gy_2;
+% 
+% Gx = Gx .* rot * fact  ;
+% Gy = Gy .* rot * fact ;
 
 
 end
