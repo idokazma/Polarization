@@ -143,6 +143,9 @@
 
 %% Generate scenario parameters
 
+addpath(genpath(pwd))
+
+
 params.te = 0;
 params.tm = 1;
 

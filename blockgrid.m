@@ -132,6 +132,7 @@ end
 
 
 now_str = datestr(now,'mmmm_dd_yyyy_HH_MM_SS');
+figure; plot(params.wavelengths,10*log10(abs(E_hit(:,:)+E_sol(:,:))./abs(E_hit(:,:))));
 
 if (params.tm)
     TM_alpha_presentation_fields_multiple;
