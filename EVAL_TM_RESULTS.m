@@ -26,7 +26,7 @@ alpha_Fil
         
         
         
-%   PARAMETERS_PLANE{i,j,t} = params;
+   PARAMETERS_PLANE{i,j,t} = params;
 try
     E_SOL_st_mie_PLANE{i,j} = E_SOL_st_mie;
     E_SOL_st_mie_MEAN_PLANE{i,j} = mean_E_mie;

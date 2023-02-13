@@ -40,7 +40,7 @@ epsilon_r1=params.er_out;               % relative dielectric constant of backgr
 % aCyl_micr=params.radius;             % Dielectric cylinders radius in microns (all cylinders are the same!)
 epsilon_r2=params.er_in;            % relative Dielectric constant of cylinders
 Rotan=params.OMEGA/params.omega;                 % Normalized rotation rate: Omega/omega
-Rotan = -Rotan; %%% fixing sign problem. can't find where.
+% Rotan = -Rotan; %%% fixing sign problem. can't find where.
 source_x_location_micr=0;   % source location in microns on the x axis (y=0)
 x_shift_micr=0;             % shift of rotation axis in microns 
 %       (structure AND source x coordinates are moved to x+x_shift)
@@ -103,7 +103,7 @@ MM=InvalphaTM*eye(Npoints,Npoints);
 MMS=sparse(MM);
 rhsVS=sparse(rhsV);
 PVector=MMS\rhsVS;  % The polarization current 
-
+disp(max(abs(rhsVS)))
 % Eq. 22 E = I*i/(pi*r^2*omega*delta_eps);
 factor = 1i/((pi*params.radius^2)*params.omega*(epsilon_r2-epsilon_r1)*params.e0);
 % Efields=PVector*InvalphaTM; % this returns Ez0
