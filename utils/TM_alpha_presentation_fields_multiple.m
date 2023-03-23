@@ -1,6 +1,5 @@
 %fields only
 clear Iz Iez Hx Hy Ez Im_x Im_y Ez_sol Hx_sol Hy_sol field_current temp_field_current_1
-stm = []
 for rho = 1 : size(field_current_mat_output,1)
     for OMEGA_r = 1 : size(field_current_mat_output,2)
         for sce = 1 :  size(field_current_mat_output,3)
@@ -25,7 +24,6 @@ for rho = 1 : size(field_current_mat_output,1)
 
         end
         
-        stm = [stm; (-params.omega^2)*params.mu0*(params.er_in-params.er_out)*params.e0*(Ez_sol-Ez)-2*(-params.omega^2)*params.mu0/(params.c^2)*params.OMEGA_vec(OMEGA_r)*params.shift_vec(rho)*(Hy_sol-Hy)]
  
         
         lineq_for_x = transpose([Hx ; Hy ;Ez]);
@@ -338,17 +336,7 @@ subplot(2,3,4); plot(params.OMEGA_vec/params.omega,abs(alpha_ezhx_mom),'x-','Lin
        
 lgd1 = legend (num2str(params.shift_vec'/params.lambda));
 
-
-
-
 title(lgd1,'\rho_c [\lambda]')
-
-figure; plot(params.OMEGA_vec/params.omega,reshape(abs(stm(:,5)),5,8));xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
-figure; plot(params.OMEGA_vec/params.omega,reshape(abs(stm(:,3)),5,8));xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
-
-figure; plot(params.OMEGA_vec/params.omega,reshape(abs(stm(:,1)),5,8));xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
-
-
 
 
 figure;
