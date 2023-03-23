@@ -46,36 +46,13 @@ for rho = 1 : size(field_current_mat_output,1)
         alpha_hyhx(rho,OMEGA_r) = a(1);
         alpha_hyhy(rho,OMEGA_r) = a(2);
         alpha_hyez(rho,OMEGA_r) = a(3);
-        
+       
 
-        
-        fact_a = -1i*params.omega*(params.er_in-params.er_out)*params.e0 * params.radius^2*pi;
-        fact_b = -1i*params.omega*(1/params.c^2)*params.OMEGA_vec(OMEGA_r)*params.shift_vec(rho)*params.radius^2*pi;
-        
-        alpha_curr_ezjz(rho,OMEGA_r) = fact_a*alpha_ezez(rho,OMEGA_r)+fact_b*alpha_hxez(rho,OMEGA_r);
-        alpha_curr_hyjz(rho,OMEGA_r) = fact_a*alpha_ezhy(rho,OMEGA_r)+fact_b*alpha_hxhy(rho,OMEGA_r);
-        alpha_curr_hxjz(rho,OMEGA_r) = fact_a*alpha_ezhx(rho,OMEGA_r)+fact_b*(alpha_hxhx(rho,OMEGA_r)-1);
-
-        
-        fact_am = -1i*params.omega*(1/params.c^2)*params.OMEGA_vec(OMEGA_r)*params.shift_vec(rho)* params.radius^2*pi;
-        fact_bm = -1i*params.omega*params.radius^2*pi*params.mu0*(params.mr_in - params.mr_out);
-        
-
-        
-        alpha_curr_ezjx(rho,OMEGA_r) = fact_am*(alpha_ezez(rho,OMEGA_r)-1)+fact_bm*alpha_hxez(rho,OMEGA_r);
-        alpha_curr_hyjx(rho,OMEGA_r) = fact_am*(alpha_ezhy(rho,OMEGA_r))+fact_bm*alpha_hxhy(rho,OMEGA_r);
-        alpha_curr_hxjx(rho,OMEGA_r) = fact_am*(alpha_ezhx(rho,OMEGA_r))+fact_bm*(alpha_hxhx(rho,OMEGA_r)-1);
-
-        alpha_curr_ezjy(rho,OMEGA_r) = 0*fact_am*alpha_hyez(rho,OMEGA_r)+fact_bm*alpha_hxez(rho,OMEGA_r);
-        alpha_curr_hyjy(rho,OMEGA_r) = 0*fact_am*(alpha_hyhy(rho,OMEGA_r)-1)+fact_bm*alpha_hxhy(rho,OMEGA_r);
-        alpha_curr_hxjy(rho,OMEGA_r) = 0*fact_am*alpha_hyhx(rho,OMEGA_r)+fact_bm*(alpha_hxhx(rho,OMEGA_r)-1);
-
-
-         lineq_for_x = transpose([Ez_inc_mom]);
+        lineq_for_x = transpose([Ez_inc_mom]);
         a=linsolve((lineq_for_x),transpose([Ez_sol_mom]));
         alpha_TM_MoM(rho,OMEGA_r) = a;
         
-         lineq_for_x = transpose([Ez]);
+        lineq_for_x = transpose([Ez]);
         a=linsolve((lineq_for_x),transpose([Ez_sol]));
         alpha_TM(rho,OMEGA_r) = a;
         
