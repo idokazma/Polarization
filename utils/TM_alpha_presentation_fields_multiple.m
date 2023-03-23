@@ -39,38 +39,11 @@ for rho = 1 : size(field_current_mat_output,1)
         alpha_ezhx_mom(rho,OMEGA_r) = a(1);
         alpha_ezhy_mom(rho,OMEGA_r) = a(2);
         alpha_ezez_mom(rho,OMEGA_r) = a(3);
-%         lineq_for_x = [Hx_1 , Hy_1 ,Ez_1; Hx_2 ,Hy_2, Ez_2; Hx_3 ,Hy_3, Ez_3];
-%         a=inv(lineq_for_x)*([Iz_1;Iz_2;Iz_3]);
-%         alpha_ezhx(rho,OMEGA_r) = a(1);
-%         alpha_ezhy(rho,OMEGA_r) = a(2);
-%         alpha_ezez(rho,OMEGA_r) = a(3);
-        
-%         lineq_for_x = [0 , 0 ,Ez_1; 0 ,0, Ez_2; 0 ,0, Ez_3];
-%         a=linsolve(lineq_for_x,[Iz_1;Iz_2;Iz_3]);
-%         alpha_ezhx(rho,OMEGA_r) = a(1);
-%         alpha_ezhy(rho,OMEGA_r) = a(2);
-%         alpha_ezez(rho,OMEGA_r) = a(3);
-     
-%         
-%         lineq_for_x = [Hx_1 , Hy_1 ,Ez_1; Hx_2 ,Hy_2, Ez_2; Hx_3 ,Hy_3, Ez_3];
-%         a=linsolve(lineq_for_x,[Iez_1;Iez_2;Iez_3]);
-%         alpha_ezhx(rho,OMEGA_r) = a(1);
-%         alpha_ezhy(rho,OMEGA_r) = a(2);
-%         alpha_ezez(rho,OMEGA_r) = a(3);
-%         
-%             lineq_for_x = [Hx_1 , Hy_1 ,Ez_1; Hx_2 ,Hy_2, Ez_2; Hx_3 ,Hy_3, Ez_3];
-%         a=linsolve(lineq_for_x,[Iz_1-Iez_1;Iz_2-Iez_2;Iz_3-Iez_3]);
-%         alpha_ezhx(rho,OMEGA_r) = a(1);
-%         alpha_ezhy(rho,OMEGA_r) = a(2);
-%         alpha_ezez(rho,OMEGA_r) = a(3);
-        %
-%         lineq_for_x = [Hx , Hy ,Ez];
         a=linsolve((lineq_for_x),transpose([Hx_sol]));
         alpha_hxhx(rho,OMEGA_r) = a(1);
         alpha_hxhy(rho,OMEGA_r) = a(2);
         alpha_hxez(rho,OMEGA_r) = a(3);
         
-%         lineq_for_x = [Hx , Hy ,Ez];
         a=linsolve((lineq_for_x),transpose([Hy_sol]));
         alpha_hyhx(rho,OMEGA_r) = a(1);
         alpha_hyhy(rho,OMEGA_r) = a(2);
@@ -99,40 +72,7 @@ for rho = 1 : size(field_current_mat_output,1)
         alpha_curr_hyjy(rho,OMEGA_r) = 0*fact_am*(alpha_hyhy(rho,OMEGA_r)-1)+fact_bm*alpha_hxhy(rho,OMEGA_r);
         alpha_curr_hxjy(rho,OMEGA_r) = 0*fact_am*alpha_hyhx(rho,OMEGA_r)+fact_bm*(alpha_hxhx(rho,OMEGA_r)-1);
 
-        
-%         %% fields alpha
-%         a=linsolve(lineq_for_x,[Hx_sol_1;Hx_sol_2;Hx_sol_3]);
-%         alpha_hxhx(rho,OMEGA_r) = a(1);
-%         alpha_hxhy(rho,OMEGA_r) = a(2);
-%         alpha_hxez(rho,OMEGA_r) = a(3);
-%         
-%         %         lineq_for_x = [Ez_1; Ez_2;Ez_3];
-%         a=linsolve(lineq_for_x,[Hy_sol_1;Hy_sol_2;Hy_sol_3]);
-%         alpha_hyhx(rho,OMEGA_r) = a(1);
-%         alpha_hyhy(rho,OMEGA_r) = a(2);
-%         alpha_hyez(rho,OMEGA_r) = a(3);
-%         
-%         
-%           lineq_for_x = [Hx_1 , Hy_1 ,Ez_1; Hx_2 ,Hy_2, Ez_2; Hx_3 ,Hy_3, Ez_3];
-%         a=linsolve(lineq_for_x,[Ez_sol_1;Ez_sol_2;Ez_sol_3]);
-%         alpha_ezhx(rho,OMEGA_r) = a(1);
-%         alpha_ezhy(rho,OMEGA_r) = a(2);
-%         alpha_ezez(rho,OMEGA_r) = a(3);
-%         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-%         lineq_for_x = [Ez_1;  Ez_2;  Ez_3];
-%         alpha_TM(rho,OMEGA_r)=linsolve(lineq_for_x,[Ez_sol_1;Ez_sol_2;Ez_sol_3]);
-        
+
          lineq_for_x = transpose([Ez_inc_mom]);
         a=linsolve((lineq_for_x),transpose([Ez_sol_mom]));
         alpha_TM_MoM(rho,OMEGA_r) = a;
@@ -141,58 +81,6 @@ for rho = 1 : size(field_current_mat_output,1)
         a=linsolve((lineq_for_x),transpose([Ez_sol]));
         alpha_TM(rho,OMEGA_r) = a;
         
-        %                 lineq_for_x = [Ez_1;  Ez_2;  Ez_3];
-        %         alpha_TM(rho,OMEGA_r)=linsolve(lineq_for_x,[Iz_1;Iz_2;Iz_3]);
-        %
-%         lineq_for_x = [Ez_inc_MoM_1;  Ez_inc_MoM_2;  Ez_inc_MoM_3];
-%         alpha_TM_MoM(rho,OMEGA_r)=linsolve(lineq_for_x,[Ez_sol_MoM_1;Ez_sol_MoM_2;Ez_sol_MoM_3]);
-        
-        
-%         %         alpha_TM_MoM(rho,OMEGA_r) = E_SOL_st_alpha_MoM{rho,OMEGA_r,1};
-% 
-%         %         alpha_hxez(rho,OMEGA_r) = a(1);
-%         %         alpha_hyez(rho,OMEGA_r) = a(2);
-%         %         alpha_ezez(rho,OMEGA_r) = a(3);
-%         
-        
-        %          b(rho,OMEGA_r) = mean([Iez_1 / Ez_1,Iez_2 / Ez_2,Iez_3 / Ez_3]);
-        %          lineq_for_x = [Hx_1 , Hy_1 ; Hx_2 ,Hy_2; Hx_3 ,Hy_3];
-        %         a=linsolve(lineq_for_x,[Iz_1-Iez_1;Iz_2-Iez_2;Iz_3-Iez_3]);
-        %         alpha_lineqhx(rho,OMEGA_r) = a(1);
-        %         alpha_lineqhy(rho,OMEGA_r) = a(2);
-        %         alpha_lineqez(rho,OMEGA_r) = b(rho,OMEGA_r);
-        
-        %         lineq_for_x = [Hx_1 , Hy_1 ,Ez_1; Hx_2 ,Hy_2, Ez_2; Hx_3 ,Hy_3, Ez_3];
-        %         a=inv(lineq_for_x)*[Iz_1;Iz_2;Iz_3];
-        %         alpha_lineqhx(rho,OMEGA_r) = a(1);
-        %         alpha_lineqhy(rho,OMEGA_r) = a(2);
-        %         alpha_lineqez(rho,OMEGA_r) = a(3);
-        %
-        
-        %         lineq_for_x = [Hx_1 , Hy_1 ,Ez_1; Hx_2 ,Hy_2, Ez_2; Hx_3 ,Hy_3, Ez_3];
-        %         a=linsolve(lineq_for_x,[Iy_1;Iy_2;Iy_3]);
-        %         alpha_lineqyx(rho,OMEGA_r) = a(1);
-        %         alpha_lineqyy(rho,OMEGA_r) = a(2);
-        %         alpha_lineqyh(rho,OMEGA_r) = a(3);
-        
-        %         lineq_for_x = [Ex_1 , Ey_1; Ex_2 ,Ey_2; Ex_3 ,Ey_3];
-        %         a=linsolve(lineq_for_x,[Iy_1;Iy_2;Iy_3]);
-        %         alpha_lineqyx(rho,OMEGA_r) = a(1);
-        %         alpha_lineqyy(rho,OMEGA_r) = a(2);
-        %         alpha_lineqyh(rho,OMEGA_r) = 0;
-        %
-        %         lineq_for_x = [Ex_1 , Ey_1; Ex_2 ,Ey_2; Ex_3 ,Ey_3];
-        %         a=linsolve(lineq_for_x,[Ix_1;Ix_2;Ix_3]);
-        %         alpha_lineqxx(rho,OMEGA_r) = a(1);
-        %         alpha_lineqxy(rho,OMEGA_r) = a(2);
-        %         alpha_lineqxh(rho,OMEGA_r) = 0;
-        
-        %         lineq_for_y = [Ex_1 , Ey_1; Ex_2 ,Ey_2];
-        %         a=linsolve(lineq_for_y,[Iy_1;Iy_2]);
-        %         alpha_lineqyx(rho,OMEGA_r) = a(1);
-        %         alpha_lineqyy(rho,OMEGA_r) = a(2);
-        
-        
     end
 end
 
@@ -200,15 +88,15 @@ for i = 1:length(alpha_ezez)
     for k=1:length(alpha_ezez(:,1))
    
         if params.OMEGA_vec(i)==0
-            alpha_ezez(k,i) = abs(alpha_ezez(k,i))*exp(1i*(angle(alpha_ezez(k,i-1) )+angle(alpha_ezez(k,i+1)))/2) 
-            alpha_ezhy(k,i) = abs(alpha_ezhy(k,i))*exp(1i*(angle(alpha_ezhy(k,i-1) )+angle(alpha_ezhy(k,i+1)))/2) 
-            alpha_ezhx(k,i) = abs(alpha_ezhx(k,i))*exp(1i*(angle(alpha_ezhx(k,i-1) )+angle(alpha_ezhx(k,i+1)))/2) 
-            alpha_hxez(k,i) = abs(alpha_hxez(k,i))*exp(1i*(angle(alpha_hxez(k,i-1) )+angle(alpha_hxez(k,i+1)))/2) 
-            alpha_hyez(k,i) = abs(alpha_hyez(k,i))*exp(1i*(angle(alpha_hyez(k,i-1) )+angle(alpha_hyez(k,i+1)))/2) 
-            alpha_hxhx(k,i) = abs(alpha_hxhx(k,i))*exp(1i*(angle(alpha_hxhx(k,i-1) )+angle(alpha_hxhx(k,i+1)))/2) 
-            alpha_hxhy(k,i) = abs(alpha_hxhy(k,i))*exp(1i*(angle(alpha_hxhy(k,i-1) )+angle(alpha_hxhy(k,i+1)))/2) 
-            alpha_hyhx(k,i) = abs(alpha_hyhx(k,i))*exp(1i*(angle(alpha_hyhx(k,i-1) )+angle(alpha_hyhx(k,i+1)))/2) 
-            alpha_hyhy(k,i) = abs(alpha_hyhy(k,i))*exp(1i*(angle(alpha_hyhy(k,i-1) )+angle(alpha_hyhy(k,i+1)))/2) 
+            alpha_ezez(k,i) = abs(alpha_ezez(k,i))*exp(1i*(angle(alpha_ezez(k,i-1) )+angle(alpha_ezez(k,i+1)))/2) ; 
+            alpha_ezhy(k,i) = abs(alpha_ezhy(k,i))*exp(1i*(angle(alpha_ezhy(k,i-1) )+angle(alpha_ezhy(k,i+1)))/2) ;
+            alpha_ezhx(k,i) = abs(alpha_ezhx(k,i))*exp(1i*(angle(alpha_ezhx(k,i-1) )+angle(alpha_ezhx(k,i+1)))/2) ;
+            alpha_hxez(k,i) = abs(alpha_hxez(k,i))*exp(1i*(angle(alpha_hxez(k,i-1) )+angle(alpha_hxez(k,i+1)))/2) ;
+            alpha_hyez(k,i) = abs(alpha_hyez(k,i))*exp(1i*(angle(alpha_hyez(k,i-1) )+angle(alpha_hyez(k,i+1)))/2) ;
+            alpha_hxhx(k,i) = abs(alpha_hxhx(k,i))*exp(1i*(angle(alpha_hxhx(k,i-1) )+angle(alpha_hxhx(k,i+1)))/2) ;
+            alpha_hxhy(k,i) = abs(alpha_hxhy(k,i))*exp(1i*(angle(alpha_hxhy(k,i-1) )+angle(alpha_hxhy(k,i+1)))/2) ;
+            alpha_hyhx(k,i) = abs(alpha_hyhx(k,i))*exp(1i*(angle(alpha_hyhx(k,i-1) )+angle(alpha_hyhx(k,i+1)))/2) ;
+            alpha_hyhy(k,i) = abs(alpha_hyhy(k,i))*exp(1i*(angle(alpha_hyhy(k,i-1) )+angle(alpha_hyhy(k,i+1)))/2) ;
         end
     end
 end
