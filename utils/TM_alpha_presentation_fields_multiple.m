@@ -315,15 +315,3 @@ lgd1 = legend (num2str(params.shift_vec'/params.lambda));
 
 title(lgd1,'\rho_c [\lambda]')
 
-
-figure;
-subplot(3,3,9); plot(params.OMEGA_vec/params.omega,abs(alpha_curr_ezjz),'x-','LineWidth',2); title ('abs($$\alpha^{ez}_{jz}$$)','Interpreter','Latex', 'FontSize', 16); xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
-subplot(3,3,8); plot(params.OMEGA_vec/params.omega,abs(alpha_curr_hyjz),'x-','LineWidth',2); title ('abs($$\alpha^{h\theta}_{jz}$$)','Interpreter','Latex', 'FontSize', 16); xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
-subplot(3,3,7); plot(params.OMEGA_vec/params.omega,abs(alpha_curr_hxjz),'x-','LineWidth',2); title ('abs($$\alpha^{h\rho}_{jz}$$)','Interpreter','Latex', 'FontSize', 16);xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
-subplot(3,3,6); plot(params.OMEGA_vec/params.omega,abs(alpha_curr_ezjy),'x-','LineWidth',2); title ('abs($$\alpha^{ez}_{j\theta}$$)','Interpreter','Latex', 'FontSize', 16);xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
-subplot(3,3,1); plot(params.OMEGA_vec/params.omega,abs(alpha_curr_hxjx),'x-','LineWidth',2); title ('abs($$\alpha^{h\rho}_{j\rho}$$)','Interpreter','Latex', 'FontSize', 16);xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
-subplot(3,3,5); plot(params.OMEGA_vec/params.omega,abs(alpha_curr_hyjy),'x-','LineWidth',2); title ('abs($$\alpha^{h\theta}_{j\theta}$$)','Interpreter','Latex', 'FontSize', 16); xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
-subplot(3,3,4); plot(params.OMEGA_vec/params.omega,abs(alpha_curr_hxjy),'x-','LineWidth',2); title ('abs($$\alpha^{h\rho}_{j\theta}$$)','Interpreter','Latex', 'FontSize', 16); xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
-subplot(3,3,2); plot(params.OMEGA_vec/params.omega,abs(alpha_curr_hyjx),'x-','LineWidth',2); title ('abs($$\alpha^{h\theta}_{j\rho}$$)','Interpreter','Latex', 'FontSize', 16); xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
-subplot(3,3,3); plot(params.OMEGA_vec/params.omega,abs(alpha_curr_ezjx),'x-','LineWidth',2); title ('abs($$\alpha^{ez}_{j\rho}$$)','Interpreter','Latex', 'FontSize', 16); xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
-
