@@ -7,6 +7,10 @@
 % epsilon = 4 , 11
 % TM Only
 % No rotation
+
+addpath(genpath(pwd))
+
+
 GA_generator;
 params.te = 0;
 params.tm = 1;
@@ -32,16 +36,16 @@ params.is_plane_wave = 0;
 params.calc_full_sol = 0;
 params.plane = 0;
 
-params.len_n = 600;
-params.wid_n = 600;
-params.len = 1*1e-6;
-params.wid = 1*1e-6;
+params.len_n = 200;
+params.wid_n = 200;
+params.len = 0.5*1e-6;
+params.wid = 0.5*1e-6;
 params.Iz = 1
 params.hit_plane = 0
 params.plave_wave_direction = 1; %1 for x, 0 for y;
 
-             params.sca_x = params.lambda*VogelArrayXY(1,1:10);
-             params.sca_y = params.lambda*VogelArrayXY(2,1:10);
+             params.sca_x = 1*params.lambda*VogelArrayXY(1,1:15);
+             params.sca_y = 1*params.lambda*VogelArrayXY(2,1:15);
 disp (max(sqrt(params.sca_x.^2+params.sca_y.^2)))
 generate_parameters;
 
@@ -49,7 +53,7 @@ generate_parameters;
 params.OMEGA_vec = 1*linspace(-5e-6*params.omega,5e-6*params.omega,15);
 params.OMEGA_vec = 1*params.omega*(0:1e-6:4e-6);
 
-params.OMEGA_vec = 1e-3*params.omega*(-2e-4:5e-5:2e-4);
+params.OMEGA_vec = 1e-1*params.omega*(-5e-4:5e-5:5e-4);
 %  params.OMEGA_vec = 0*5e-6*params.omega;
 
 % params.OMEGA_vec = 1e-5*params.omega;
@@ -77,11 +81,14 @@ for t = 1:1
             params.OMEGA = params.OMEGA_vec(j);
             params.shift_vec(i)
             
-            x_shift = 0*params.shift_vec(i)*params.lambda;
+            x_shift = 0*params.lambda;
             y_shift = 0*params.lambda;
             
             params.source_loc_x = 0*params.lambda*[0] + 0*params.shift_vec(i)+ x_shift;
             params.source_loc_y = 0*params.lambda*[-1000] + y_shift;
+            
+             params.sca_x = 1*params.lambda*VogelArrayXY(1,1:20) + x_shift;
+             params.sca_y = 1*params.lambda*VogelArrayXY(2,1:20)  + y_shift;
             
 %             params.sca_x = params.lambda*[ 0 ] + 1*params.shift_vec(i) + x_shift;
 %             params.sca_y = params.lambda*[ 0 ] + y_shift;
@@ -150,6 +157,7 @@ end
 now_str = datestr(now,'mmmm_dd_yyyy_HH_MM_SS');
 
 if (params.tm)
+    plot_fil_mom_pol;
     TM_alpha_presentation;
 end
 if (params.te)

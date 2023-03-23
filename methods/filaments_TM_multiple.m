@@ -175,45 +175,81 @@ end
 %     H_inc_y = 0*E_inc_z + 1./(1i*params.omega*(params.mu0*params.mr_out)) * H_inc_green_y;
 %     H_inc_z = 0*H_inc_green_x;
 
+Mx = zeros(length(test_point_total),length(filaments_total));
+MHz = zeros(length(test_point_total),length(filaments_total));
 
-
+% for i=1:length(test_point_total)
+%     nhat = test_point_total(i,4:6);
+%     test_point_xy = [test_point_total(i,1:2)];
+% %     activations = zeros(length(test_point_total),length(filaments_total));;
+% 
+%     for j=1:length(filaments_total)
+%         if (test_point_total(i,3) == filaments_total(j,3) && filaments_total(j,4) == 0) %% we are talking on the same scatterer and test point, and the filaments is outside the sca
+%             
+% %             locs = (filaments_total(:,3)==test_point_total(i,3)) .*  (filaments_total(:,4)==0);
+% %             Mx(i,:) = -scalar_green(filaments_total(locs==1,1:2)',test_point_xy',params,1);
+% %             [Gx,Gy] = dyiadic_green(filaments_total(locs==1,1:2)',test_point_xy',params,1);
+%             Mx(i,j) = -scalar_green(filaments_total(j,1:2)',test_point_xy',params,1);
+%             [Gx,Gy] = dyiadic_green(filaments_total(j,1:2)',test_point_xy',params,1);
+% 
+%             sol = cross(nhat,[Gx,Gy,0*Gx]);
+%             MHz(i,j) = -sol(3);%MINUS SIGN
+%             
+%         elseif (test_point_total(i,3) == filaments_total(j,3) && filaments_total(j,4) == 1)  %% we are talking on the same scatterer and test point, and the filaments is inside the sca
+%             Mx(i,j) = scalar_green(filaments_total(j,1:2)',test_point_xy',params, 0);
+%             [Gx,Gy] = dyiadic_green(filaments_total(j,1:2)',test_point_xy',params,0);
+%             sol = cross(nhat,[Gx,Gy,0]);
+%             MHz(i,j) = sol(3);
+%             
+%         elseif (test_point_total(i,3) ~= filaments_total(j,3) && filaments_total(j,4) == 1)  %% we are talking on other scatterer and test point, and the filaments is inside the sca
+%             Mx(i,j) = scalar_green(filaments_total(j,1:2)',test_point_xy',params, 0);
+%             [Gx,Gy] = dyiadic_green(filaments_total(j,1:2)',test_point_xy',params,0);
+%             sol = cross(nhat,[Gx,Gy,0]);
+%             MHz(i,j) = sol(3);
+%             
+%         else
+%             Mx(i,j) = 0;
+%             MHz(i,j) = 0;
+%             
+%             
+%         end
+%         
+%     end
+%     Vex(i) = -E_inc_z(i);
+%     sol = cross(nhat,[H_inc_x(i),H_inc_y(i),0]);
+%     Vhz(i) = -1*sol(3);
+% end
 for i=1:length(test_point_total)
     nhat = test_point_total(i,4:6);
     test_point_xy = [test_point_total(i,1:2)];
+
+    activations = zeros(length(test_point_total),length(filaments_total));
+    activations(i,:) =  (filaments_total(:,3)==test_point_total(i,3)) .*  (filaments_total(:,4)==0);
+    Mx(i,activations(i,:)==1) = -scalar_green(filaments_total(activations(i,:)==1,1:2)',test_point_xy',params,1);
+    [Gx,Gy] = dyiadic_green(filaments_total(activations(i,:)==1,1:2)',test_point_xy',params,1);
+    sol = cross(kron(nhat,ones(length(Gx),1)).',[Gx;Gy;0*Gx]);
+    MHz(i,activations(i,:)==1) = -sol(3,:);
     
-    for j=1:length(filaments_total)
-        if (test_point_total(i,3) == filaments_total(j,3) && filaments_total(j,4) == 0) %% we are talking on the same scatterer and test point, and the filaments is outside the sca
-            Mx(i,j) = -scalar_green(filaments_total(j,1:2)',test_point_xy',params,1);
-            [Gx,Gy] = dyiadic_green(filaments_total(j,1:2)',test_point_xy',params,1);
-            sol = cross(nhat,[Gx,Gy,0]);
-            MHz(i,j) = -sol(3);%MINUS SIGN
-            
-        elseif (test_point_total(i,3) == filaments_total(j,3) && filaments_total(j,4) == 1)  %% we are talking on the same scatterer and test point, and the filaments is inside the sca
-            Mx(i,j) = scalar_green(filaments_total(j,1:2)',test_point_xy',params, 0);
-            [Gx,Gy] = dyiadic_green(filaments_total(j,1:2)',test_point_xy',params,0);
-            sol = cross(nhat,[Gx,Gy,0]);
-            MHz(i,j) = sol(3);
-            
-        elseif (test_point_total(i,3) ~= filaments_total(j,3) && filaments_total(j,4) == 1)  %% we are talking on other scatterer and test point, and the filaments is inside the sca
-            Mx(i,j) = scalar_green(filaments_total(j,1:2)',test_point_xy',params, 0);
-            [Gx,Gy] = dyiadic_green(filaments_total(j,1:2)',test_point_xy',params,0);
-            sol = cross(nhat,[Gx,Gy,0]);
-            MHz(i,j) = sol(3);
-            
-        else
-            Mx(i,j) = 0;
-            MHz(i,j) = 0;
-            
-            
-        end
-        
-    end
+    activations(i,:) =  2*(filaments_total(:,3)==test_point_total(i,3)) .*  (filaments_total(:,4)==1);
+    Mx(i,activations(i,:)==2) = scalar_green(filaments_total(activations(i,:)==2,1:2)',test_point_xy',params,0);
+    [Gx,Gy] = dyiadic_green(filaments_total(activations(i,:)==2,1:2)',test_point_xy',params,0);
+    sol = cross(kron(nhat,ones(length(Gx),1)).',[Gx;Gy;0*Gx]);
+    MHz(i,activations(i,:)==2) = sol(3,:);
+    
+    activations(i,:) =  3*(filaments_total(:,3)~=test_point_total(i,3)) .*  (filaments_total(:,4)==1);
+    Mx(i,activations(i,:)==3) = scalar_green(filaments_total(activations(i,:)==3,1:2)',test_point_xy',params,0);
+    [Gx,Gy] = dyiadic_green(filaments_total(activations(i,:)==3,1:2)',test_point_xy',params,0);
+    sol = cross(kron(nhat,ones(length(Gx),1)).',[Gx;Gy;0*Gx]);
+    MHz(i,activations(i,:)==3) = sol(3,:);
+    
+    
     Vex(i) = -E_inc_z(i);
     sol = cross(nhat,[H_inc_x(i),H_inc_y(i),0]);
     Vhz(i) = -1*sol(3);
 end
 
-M_total = [Mx;MHz];
+
+ M_total = [Mx;MHz];
 % figure; imagesc(real(M_total));
 % P_inverse_M = ((M_total')*M_total)\(M_total');
 % P_inverse_M = (transpose(M_total)*M_total)\(transpose(M_total));
@@ -335,16 +371,23 @@ mean_Ez_inc = mean(E_inc_z_inside_sca,2);
 %     H_inc_x = 0*E_inc_z + 1./(1i*params.omega*(params.mu0*params.mr_out)) * H_inc_green_x;
 %     H_inc_y = 0*E_inc_z + 1./(1i*params.omega*(params.mu0*params.mr_out)) * H_inc_green_y;
 %     H_inc_z = 0*H_inc_green_x;
+if length(params.sca_x)==1
+    
+    for tt = 1 : length(Hy_sol_final)
 
-for tt = 1 : length(Hy_sol_final)
-    
-    final_current_H(tt) = -Hx_sol_final(tt)*in_loc_line(1,tt) -  Hy_sol_final(tt)*in_loc_line(2,tt);
-    rotation_current_H(tt) =  -H_inc_x_inside_sca(tt)*in_loc_line(1,tt) -  H_inc_y_inside_sca(tt)*in_loc_line(2,tt);
-    Jm_fil_x(tt) = (E_sol_final(tt) - E_inc_z_inside_sca(tt))*in_loc_line(1,tt);
-    Jm_fil_y(tt) = (E_sol_final(tt) - E_inc_z_inside_sca(tt))*in_loc_line(2,tt);
-    
-%     Jm_fil_x(tt) = (E_sol_final(tt))*in_loc_line(1,tt);
-%     Jm_fil_y(tt) = (E_sol_final(tt))*in_loc_line(2,tt);
+        final_current_H(tt) = -Hx_sol_final(tt)*in_loc_line(1,tt) -  Hy_sol_final(tt)*in_loc_line(2,tt);
+        rotation_current_H(tt) =  -H_inc_x_inside_sca(tt)*in_loc_line(1,tt) -  H_inc_y_inside_sca(tt)*in_loc_line(2,tt);
+        Jm_fil_x(tt) = (E_sol_final(tt) - E_inc_z_inside_sca(tt))*in_loc_line(1,tt);
+        Jm_fil_y(tt) = (E_sol_final(tt) - E_inc_z_inside_sca(tt))*in_loc_line(2,tt);
+
+    %     Jm_fil_x(tt) = (E_sol_final(tt))*in_loc_line(1,tt);
+    %     Jm_fil_y(tt) = (E_sol_final(tt))*in_loc_line(2,tt);
+    end
+else
+    final_current_H = 0;
+    rotation_current_H = 0;
+    Jm_fil_x = 0;
+    Jm_fil_y = 0;
 end
 %
 % final_current_H  = -mean_Hx_fil * params.sca_x - mean_Hy_fil * params.sca_y;

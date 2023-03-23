@@ -7,7 +7,7 @@ alpha=alphaGA;
 %
 VogelArrayXY=zeros(2,N);
 VogelArrayRT=VogelArrayXY;
-min_dist = 400;
+min_dist = 10;
 a=1/1.6*min_dist;
 for ip=1:N;
     rp=sqrt(ip)*a;

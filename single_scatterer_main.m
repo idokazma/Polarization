@@ -175,19 +175,19 @@ if (params.multiscatterer == 1)
     x_shift = params.lambda*30;
     y_shift = params.lambda*0;
 
-    params.sca_x = params.lambda*VogelArrayXY(1,1:10)+x_shift;
-    params.sca_y = params.lambda*VogelArrayXY(2,1:10)+y_shift;
+    params.sca_x = 100*params.lambda*VogelArrayXY(1,1:10)+x_shift;
+    params.sca_y = 100*params.lambda*VogelArrayXY(2,1:10)+y_shift;
 end
 
 generate_parameters;
 
-params.OMEGA_vec = 1*params.omega*(0:1e-5:3e-5);
+params.OMEGA_vec = 1*params.omega*(-3e-5:1e-5:3e-5);
 params.shift_vec = 1*[1,2,4,10,20,50,100,200] * params.lambda;
-params.shift_vec = 1*[1,2,4,8,16,32,64,128] * params.lambda;
+% params.shift_vec = 1*[0.1,1,2,4,8,16,32,64,128] * params.lambda*5;
 
 %% Generate sources locations
-dis = 200.345; 
-sources = dis *lambda * exp(1i*2*pi*linspace(0,1, 5));
+dis = 200; 
+sources = dis *lambda * exp(1i*2*pi*linspace(0,1, 10));
 sources = sources(1:end-1);
 
 

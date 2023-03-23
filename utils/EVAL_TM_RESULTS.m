@@ -1,13 +1,14 @@
 %% EVAL_ALL_RESULTS
 
 
-
+original_radius = params.radius;
 [E_SOL_st_MoM, mean_E_MoM,mean_I_MoM,effective_radius, alpha_MoM, mean_E0_MoM] = MoM(params);
 alpha_MoM
 % mean_E_MoM
 % mean_I_MoM
 close all;
 params.radius = effective_radius;
+% params.radius = original_radius*0.9874;
 
 [Pvec, E_SOL_st_POL, alpha_Pol] = RotatingArray_2D_TM(params, params.E_inc_z, 0);
 alpha_Pol
@@ -18,6 +19,8 @@ if (params.is_plane_wave == 1 && length(params.sca_x)== 1 && (params.sca_x)== 0 
 mean_E_mie = mean(mean_E_mie)
         fprintf('done MIE\n')
 end
+% params.radius = original_radius * 0.9819;
+
 [E_SOL_st_filaments_mul, mean_E_fil,mean_I_fil, alpha_Fil,field_current_mat] = filaments_TM_multiple(params,0);
 alpha_Fil
 
