@@ -24,6 +24,6 @@ rr =sqrt((xtest-xsource).*(xtest-xsource)+(ytest-ysource).*(ytest-ysource));
 
 Gst = 1i/4*besselh(0,1,k0*n*rr);
 
-G = Gst.*rot;
+G = Iz*Gst.*rot;
 
 end

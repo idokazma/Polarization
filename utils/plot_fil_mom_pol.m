@@ -76,6 +76,24 @@ xlabel('\Omega/\omega');
 grid on;
 grid minor;
 
+figure;
+
+for ll=1:size((E_SOL_st_MoM_final),1)
+    
+    p1(ll) = plot(OMEGA_final,angle(E_SOL_st_MoM_final(ll,:)),'x-'); hold on;
+    p2(ll) = plot(OMEGA_final,angle(E_SOL_st_filaments_mul_final(ll,:) ),'s-');
+    p3(ll) = plot(OMEGA_final,angle((E_SOL_st_pol_final(ll,:) )),'d-');
+    
+    legend([p1(1), p2(1), p3(1)], {'MoM' , 'Fil', 'Pol'});
+    
+    
+end
+
+title(['angle(E) vs \Omega/\omega, \lambda =',num2str(params_final.lambda*1e6),'\mum, Radius = ',num2str(params_final.radius/params_final.lambda,4),'\lambda,', ' epsilon = ',num2str(params_final.er_in)])
+xlabel('\Omega/\omega');
+
+grid on;
+grid minor;
 
 
 figure;

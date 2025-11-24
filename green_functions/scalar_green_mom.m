@@ -7,7 +7,7 @@ xtest = test(1,:);
 ytest = test(2,:);
 
 rot = exp(1i*k0*OMEGA/c*(xsource.*ytest-ysource.*xtest));
-rr =sqrt((xtest-xsource).*(xtest-xsource)+(ytest-ysource).*(ytest-ysource));
+rr = sqrt((xtest-xsource).*(xtest-xsource)+(ytest-ysource).*(ytest-ysource));
 
 Gst = 1i/4*besselh(0,1,k0*n*rr);
 

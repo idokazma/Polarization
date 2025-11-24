@@ -1,5 +1,5 @@
 
-N=100;
+N=400;
 GoldenRatioS=1.5+0.5*sqrt(5);   % the square of the golden ratio
 alphaGA=2*pi/GoldenRatioS;      % the golden angle in radians
 alpha=alphaGA;

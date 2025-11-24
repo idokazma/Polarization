@@ -1,8 +1,8 @@
 %% EVAL_ALL_RESULTS
 
 
-original_radius = params.radius;
-[E_SOL_st_MoM, mean_E_MoM,mean_I_MoM,effective_radius, alpha_MoM, mean_E0_MoM] = MoM(params);
+params.original_radius = params.radius;
+[E_SOL_st_MoM, mean_E_MoM,mean_I_MoM,effective_radius, alpha_MoM, mean_E0_MoM,E_center_MoM] = MoM(params);
 close all;
 params.radius = effective_radius;
 
@@ -13,6 +13,7 @@ if (params.is_plane_wave == 1 && length(params.sca_x)== 1 && (params.sca_x)== 0 
     mean_E_mie = mean(mean_E_mie)
     fprintf('done MIE\n')
 end
+% params.radius = params.original_radius;
 
 [E_SOL_st_filaments_mul, mean_E_fil,mean_I_fil, alpha_Fil,field_current_mat] = filaments_TM_multiple(params,0);
 
@@ -39,12 +40,15 @@ E_SOL_st_MoM_MEAN_PLANE{i,j,t} = mean_E_MoM;
 E_SOL_st_MoM_MEAN_PLANE_E0{i,j,t} = mean_E0_MoM;
 E_SOL_st_MoM_I_MEAN_PLANE{i,j,t} = mean_I_MoM;
 E_SOL_st_alpha_MoM{i,j,t} = alpha_MoM;
+E_SOL_st_alpha_MoM_center{i,j,t} = E_center_MoM;
 catch
 E_SOL_st_MoM_PLANE{i,j,t} = -1;
 E_SOL_st_MoM_MEAN_PLANE{i,j,t} = -1;
 E_SOL_st_MoM_MEAN_PLANE_E0{i,j,t} = -1;
 E_SOL_st_MoM_I_MEAN_PLANE{i,j,t} = -1;
-E_SOL_st_alpha_MoM{i,j,t} = -1;    
+E_SOL_st_alpha_MoM{i,j,t} = -1;   
+E_SOL_st_alpha_MoM_center{i,j,t} = -1;
+
 end
 
 E_SOL_st_POL_PLANE{i,j,t} = E_SOL_st_POL;

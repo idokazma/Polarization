@@ -9,13 +9,13 @@
 %% Generate scenario parameters
 
 addpath(genpath(pwd))
-
+% clear all
 
 params.te = 0;
 params.tm = 1;
 
 eps_vec = [11.4]; %epsilon of the scatterer
-radius_vec = [1/100];%radius of scatterer in terms of wavelengths
+radius_vec = [2/100];%radius of scatterer in terms of wavelengths
 params.lambda = 1e-6; %[meters] %wavelength of radiation
 params.Iz = 1; % single source radiating current
 
@@ -28,8 +28,8 @@ params.hit_plane=0;
 
 % geometric parameters of the grid for calculation.
 
-params.len_n = 61;
-params.wid_n = 61;
+params.len_n = 51;
+params.wid_n = 51;
 params.len = radius_vec*params.lambda*2.1;
 params.wid = radius_vec*params.lambda*2.1;
 
@@ -45,15 +45,39 @@ if (params.multiscatterer == 1)
 end
 
 generate_parameters;
-
-params.OMEGA_vec = 1*params.omega*(-3e-5:1e-5:3e-5);
-params.shift_vec = 1*[1,2,4,10,20,50,100,200] * params.lambda;
+% params.only_center=1;
+params.OMEGA_vec = 0+1e-0*params.omega*(-5e-5:(2*5e-6):5e-5);
+% params.shift_vec = 1*[0,20, 40,60,80,100] * params.lambda;
+params.shift_vec = 1*[0,25,50,75,100] * params.lambda;
+% params.shift_vec = 1*[0,50,100] * params.lambda;
 
 %% Generate sources locations
-dis = 200;  %distance of source from scattereres
-sources = dis *lambda * exp(1i*2*pi*linspace(0,1, 10));
+dis = 50;  %distance of source from scattereres
+sources = dis * lambda * exp(1i*(2*pi*linspace(0,1,5))) ;
 sources = sources(1:end-1);
 
+
+rng('default') 
+sources = [sources, sources/10];
+sources_2 = sources ;
+params.sources_v2 = sources + 0*0.01*1i* lambda;
+% sources_2 = -sources ;
+% number_of_sources = 1;
+% params.sources_v2 = lambda*(20*rand(number_of_sources,length(sources))+dis).*exp(1i*(2*pi*rand(number_of_sources,length(sources))));
+% params.sources_v2 = [params.sources_v2,-params.sources_v2];
+% params.sources_v2 = [params.sources_v2,conj(params.sources_v2)];
+
+% sources = [sources, conj(sources)];
+% sources = [sources, -real(sources) + 1i*imag(sources)];
+% sources = [sources, -(sources)];
+% sources_2 = [sources_2, sources_2/10];
+% sources_2 = [sources_2, conj(sources_2)];
+% sources_2 = [sources_2, -real(sources_2) + 1i*imag(sources_2)];
+% sources_2 = [sources_2, -sources_2];
+
+% dis = 10.98472;  %distance of source from scattereres
+% sources_ = dis *lambda * exp(1i*2*pi*linspace(0,1, 4)) ;
+% sources = [sources_(1:end-1), sources];
 now_str = datestr(now,'mmmm_dd_yyyy_HH_MM_SS');
 Run_name = ['RUN_' , now_str];
 
@@ -61,11 +85,13 @@ Run_name = ['RUN_' , now_str];
 % Hitting Field
 counter = 0;
 total_runs = length(params.shift_vec)*length(params.OMEGA_vec)*length(sources);
+
 for t = 1:length(sources) % for every source
-    
+                    params.I2 = 0;
+
     for i = 1:length(params.shift_vec) % for every shift of scatterer location
-              params.er_in = eps_vec;
-              params.n_in = sqrt(params.mr_in*params.er_in);
+%               params.er_in = eps_vec;
+%               params.n_in = sqrt(params.mr_in*params.er_in);
         %     params.n_out = sqrt(params.mr_out*params.er_out);
         
         for j = 1:length(params.OMEGA_vec) % for every Omega (rotation rate)
@@ -79,8 +105,14 @@ for t = 1:length(sources) % for every source
             params.source_loc_x = real(sources(t))+params.sca_x;
             params.source_loc_y = imag(sources(t))+params.sca_y;
 
+            params.sources_v2_x = real(params.sources_v2(:,t))+params.sca_x;          
+            params.sources_v2_y = imag(params.sources_v2(:,t))+params.sca_y;          
+            
+            
+            params.source_loc_x_2 = real(sources_2(t))+params.sca_x;
+            params.source_loc_y_2 = imag(sources_2(t))+params.sca_y;
             counter=counter+1;
-            formatSpec = 'Calculating...Overall: %2.1f%% Shift: %2.1f%%, Omega: %2.1f%%, Source %2.1f%%.\n';
+            formatSpec = 'Calculating...Overall: %2.3f%% Shift: %2.1f%%, Omega: %2.1f%%, Source %2.1f%%.\n';
             fprintf(formatSpec,100*counter/total_runs,100*i/length(params.shift_vec),100*j/length(params.OMEGA_vec), 100*t/length(sources))
             
             if (params.is_plane_wave ==1)

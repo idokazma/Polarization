@@ -183,7 +183,7 @@ function[alphaTM]=CylPolTM(params, aCyl,k0,epsilon_r1,epsilon_r2);
 %
 % A funcrion that computes the electric polarizability of thin dielectic
 % cylinder in TM illomination (E field along the cylinder axis)
-omega_mu0=params.k0*params.c*params.mu0; %k0*3e8*1.256637061435917e-06;
+omega_mu0=k0*params.c*params.mu0; %k0*3e8*1.256637061435917e-06;
 
 n1=params.n_out;
 n2=params.n_in;

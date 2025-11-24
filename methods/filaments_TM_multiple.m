@@ -61,6 +61,9 @@ OMEGA = params.OMEGA;
 n_in = params.n_in;
 n_out = params.n_out;
 
+
+
+
 %% START THE ELECTROMAGNETIC CALCULATIONS
 
 % set the Ez_incident and the Ht_incident
@@ -103,20 +106,68 @@ if (params.is_plane_wave == 1)
 else
     
     if (params.hit_plane == 0)
+        %         OMEGA_orig = params.OMEGA;
+        %         params.OMEGA = 0;
+        if params.multisources
+                E_inc_green = scalar_green([params.sources_v2_x;params.sources_v2_y],test_point_total',params, 0);
+                [H_inc_green_x , H_inc_green_y] = dyiadic_green([params.sources_v2_x;params.sources_v2_y],test_point_total',params, 0);
+                H_inc_green_x = H_inc_green_x;
+                H_inc_green_y = H_inc_green_y;
+
+                E_inc_z = E_inc_green;
+                E_inc_x = 0*E_inc_z;
+                E_inc_y = 0*E_inc_z;
+                
+                H_inc_x = H_inc_green_x;
+                H_inc_y = H_inc_green_y;
+                H_inc_z = 0*H_inc_green_x;
+                
+                [mean_Hx_inc_center,mean_Hy_inc_center] = dyiadic_green([params.sources_v2_x;params.sources_v2_y],[params.sca_x;params.sca_y],params, 0);
+                mean_Ez_inc_center = scalar_green([params.sources_v2_x;params.sources_v2_y],[params.sca_x;params.sca_y],params, 0);
+                
+                E_inc_z = E_inc_z*0 + mean_Ez_inc_center;
+                H_inc_x = H_inc_x*0 + mean_Hx_inc_center;
+                H_inc_y = H_inc_y*0 + mean_Hy_inc_center;
+
+        else
+            
+            E_inc_green = scalar_green([params.source_loc_x;params.source_loc_y],test_point_total',params, 0);
+            [H_inc_green_x , H_inc_green_y] = dyiadic_green([params.source_loc_x;params.source_loc_y],test_point_total',params, 0);
+            H_inc_green_x = H_inc_green_x;
+            H_inc_green_y = H_inc_green_y;
+%             
+%             E_inc_green_2 = scalar_green([params.source_loc_x_2;params.source_loc_y_2],test_point_total',params, 0);
+%             [H_inc_green_x_2 , H_inc_green_y_2] = dyiadic_green([params.source_loc_x_2;params.source_loc_y_2],test_point_total',params, 0);
+%             H_inc_green_x = H_inc_green_x;
+%             H_inc_green_y = H_inc_green_y;
+            %         params.OMEGA = OMEGA_orig
+            
+            
+            E_inc_z = E_inc_green;
+            E_inc_x = 0*E_inc_z;
+            E_inc_y = 0*E_inc_z;
+            
+            H_inc_x = H_inc_green_x;
+            H_inc_y = H_inc_green_y;
+            H_inc_z = 0*H_inc_green_x;
+            
+            [mean_Hx_inc_center,mean_Hy_inc_center] = dyiadic_green([params.source_loc_x;params.source_loc_y],[params.sca_x;params.sca_y],params, 0);
+            mean_Ez_inc_center = scalar_green([params.source_loc_x;params.source_loc_y],[params.sca_x;params.sca_y],params, 0);
+            
+%                             [mean_Hx_inc_center,mean_Hy_inc_center] = dyiadic_green([params.sources_v2_x;params.sources_v2_y],[params.sca_x;params.sca_y],params, 0);
+%                 mean_Ez_inc_center = scalar_green([params.sources_v2_x;params.sources_v2_y],[params.sca_x;params.sca_y],params, 0);
+%                 
+%                 E_inc_z = E_inc_z*1 -1* mean(E_inc_z);
+%                 H_inc_x = H_inc_x*1 + 0*mean_Hx_inc_center;
+%                 H_inc_y = H_inc_y*1 + 0*mean_Hy_inc_center;
+
         
-        E_inc_green = scalar_green([params.source_loc_x;params.source_loc_y],test_point_total',params, 0);
-        [H_inc_green_x , H_inc_green_y] = dyiadic_green([params.source_loc_x;params.source_loc_y],test_point_total',params, 0);
-        H_inc_green_x = H_inc_green_x;
-        H_inc_green_y = H_inc_green_y;
-        
-        E_inc_z = E_inc_green*1 + 0*mean(E_inc_green);
-        E_inc_x = 0*E_inc_z;
-        E_inc_y = 0*E_inc_z;
-        
-        H_inc_x = H_inc_green_x*1 + 0*mean(H_inc_green_x);
-        H_inc_y = H_inc_green_y*1 + 0*mean(H_inc_green_y);
-        H_inc_z = 0*H_inc_green_x;
-        
+        end
+        %
+        %         E_inc_z = E_inc_z*0 +1*mean_Ez_inc_center;
+        %         H_inc_x = H_inc_x*0 +1*mean_Hx_inc_center;
+        %         H_inc_y = H_inc_y*0 +1*mean_Hy_inc_center;
+        %
     else
         E_inc_green = inc_Ez_field([params.source_loc_x;params.source_loc_y],test_point_total',params.n_out,params.k0,params.c,params.OMEGA, params.direction);
         [H_inc_green_x , H_inc_green_y] = inc_Ht_field([params.source_loc_x;params.source_loc_y],test_point_total',params.n_out,params.k0, c,params.OMEGA, params.direction);
@@ -166,6 +217,12 @@ for i=1:length(test_point_total)
     Vex(i) = -E_inc_z(i);
     sol = cross(nhat,[H_inc_x(i),H_inc_y(i),0]);
     Vhz(i) = -1*sol(3);
+    
+    %     Vex(i) = -scalar_green([params.source_loc_x;params.source_loc_y],test_point_xy',params,0);
+    %     [Gx,Gy] = dyiadic_green([params.source_loc_x;params.source_loc_y],test_point_xy',params,0);
+    %     sol = cross(nhat,[Gx;Gy;0]);
+    %     Vhz(i) = -1*sol(3);
+    
 end
 
 
@@ -181,6 +238,7 @@ loc_line = [X(:),Y(:)]';
 E_sol = zeros(1,length(loc_line));
 
 grid_inside_each_sca = ((X).^2 +(Y).^2)<=0.999999*R*R;
+grid_inside_each_sca = ((X).^2 +(Y).^2)<=1*R*R;
 E_sol_final = zeros(length(params.sca_x),length(X(grid_inside_each_sca)));
 Hx_sol_final = zeros(length(params.sca_x),length(X(grid_inside_each_sca)));
 Hy_sol_final = zeros(length(params.sca_x),length(X(grid_inside_each_sca)));
@@ -205,9 +263,9 @@ mean_E_fil = mean(E_sol_final,2);
 mean_I_fil = mean_E_fil*(-1i*params.omega*params.e0*(params.er_in-params.er_out)*pi*R*R);
 
 if ( params.hit_plane ==0)
-    hit_field_inside = scalar_green([params.source_loc_x;params.source_loc_y],in_loc_line,params,0);
+    hit_field_inside = scalar_green([params.sources_v2_x;params.sources_v2_y],in_loc_line,params,0);
 else
-    hit_field_inside = inc_Ez_field([params.source_loc_x;params.source_loc_y],in_loc_line,n_out,k0,c,OMEGA, params.direction);
+    hit_field_inside = inc_Ez_field([params.sources_v2_x;params.sources_v2_y],in_loc_line,n_out,k0,c,OMEGA, params.direction);
 end
 alpha_Fil = mean(mean_I_fil)./mean(hit_field_inside);
 
@@ -219,11 +277,22 @@ for mm = 1 : length(params.sca_x)
     
     for i = 1:length(in_loc_line)
         if (params.hit_plane == 0)
-            E_inc_green_inside(i,:) = scalar_green([params.source_loc_x;params.source_loc_y],[in_loc_line(1,i),in_loc_line(2,i)]',params,0);
+            E_inc_green_inside(i,:) = scalar_green([params.sources_v2_x;params.sources_v2_y],[in_loc_line(1,i),in_loc_line(2,i)]',params,0);
+            E_inc_green_inside(i,:) =E_inc_green_inside(i,:);
             
-            [H_inc_green_x_temp , H_inc_green_y_temp] = dyiadic_green([params.source_loc_x;params.source_loc_y],[in_loc_line(1,i),in_loc_line(2,i)]',params, 0);
+            [H_inc_green_x_temp , H_inc_green_y_temp] = dyiadic_green([params.sources_v2_x;params.sources_v2_y],[in_loc_line(1,i),in_loc_line(2,i)]',params, 0);
             H_inc_green_x_inside(i,:) = H_inc_green_x_temp;
             H_inc_green_y_inside(i,:) = H_inc_green_y_temp;
+            
+%             
+%             [H_inc_green_x_temp_2 , H_inc_green_y_temp_2] = dyiadic_green([params.source_loc_x_2;params.source_loc_y_2],[in_loc_line(1,i),in_loc_line(2,i)]',params, 0);
+%             H_inc_green_x_inside(i,:) = H_inc_green_x_temp+params.I2*H_inc_green_x_temp_2;
+%             H_inc_green_y_inside(i,:) = H_inc_green_y_temp+params.I2*H_inc_green_y_temp_2;
+            
+            %             E_inc_green_2 = scalar_green([params.source_loc_x_2;params.source_loc_y_2],test_point_total',params, 0);
+            %             [H_inc_green_x_2 , H_inc_green_y_2] = dyiadic_green([params.source_loc_x_2;params.source_loc_y_2],test_point_total',params, 0);
+            
+            
         else
             E_inc_green_inside(i,:) = inc_Ez_field([params.source_loc_x;params.source_loc_y],[in_loc_line(1,i),in_loc_line(2,i)]',params.n_out,params.k0,params.c,params.OMEGA, params.direction);
             
@@ -245,6 +314,26 @@ mean_Hx_inc = mean(H_inc_x_inside_sca,2);
 mean_Hy_inc = mean(H_inc_y_inside_sca,2);
 
 mean_Ez_inc = mean(E_inc_z_inside_sca,2);
+
+[mean_Hx_inc_center,mean_Hy_inc_center] = dyiadic_green([params.sources_v2_x;params.sources_v2_y],[params.sca_x;params.sca_y],params, 0);
+mean_Ez_inc_center = scalar_green([params.sources_v2_x;params.sources_v2_y],[params.sca_x;params.sca_y],params, 0);
+
+E_sol_final_point = zeros(length(params.sca_x),1);
+Hx_sol_final_point = zeros(length(params.sca_x),1);
+Hy_sol_final_point = zeros(length(params.sca_x),1);
+
+
+for tt = 1:length(filaments_total)
+    if (filaments_total(tt,4) == 0)
+        E_sol_final_point(filaments_total(tt,3),:) = E_sol_final_point(filaments_total(tt,3),:) + sum(I_solution(tt)*scalar_green(filaments_total(tt,1:2)',[params.sca_x;params.sca_y],params,1));
+        [Hx,Hy] = dyiadic_green(filaments_total(tt,1:2)',[params.sca_x;params.sca_y],params,1);
+        Hx_sol_final_point(filaments_total(tt,3),:) = Hx_sol_final_point(filaments_total(tt,3),:) + sum(I_solution(tt)* Hx);
+        Hy_sol_final_point(filaments_total(tt,3),:) = Hy_sol_final_point(filaments_total(tt,3),:) + sum(I_solution(tt)* Hy);
+        
+        
+    end
+end
+
 
 if length(params.sca_x)==1
     
@@ -272,7 +361,7 @@ mean_Im_fil_y = -1i*params.omega*params.OMEGA/(params.c^2)* params.sca_y * (mean
 
 mean_I_fil = mean(E_sol_final)*(-1i*params.omega*params.e0*(params.er_in-params.er_out)*pi*R*R) + 1i*params.omega/(params.c^2)*params.OMEGA*mean(H_current_add)*pi*R*R;
 mean_I_fil_E_only = mean(E_sol_final)*(-1i*params.omega*params.e0*(params.er_in-params.er_out)*pi*R*R);
-output_mat = {mean_I_fil,mean_I_fil_E_only,mean_Hx_inc,mean_Hy_inc,mean_Ez_inc , mean_Im_fil_x , mean_Im_fil_y,mean_E_fil,mean_Hx_fil,mean_Hy_fil};
+output_mat = {mean_I_fil,mean_I_fil_E_only,mean_Hx_inc,mean_Hy_inc,mean_Ez_inc , mean_Im_fil_x , mean_Im_fil_y,mean_E_fil,mean_Hx_fil,mean_Hy_fil , E_sol_final_point, Hx_sol_final_point,Hy_sol_final_point, mean_Ez_inc_center, mean_Hx_inc_center, mean_Hy_inc_center};
 
 E_SOL_st_fil_TM = -1;
 Hx_SOL_st_fil_TM = -1;

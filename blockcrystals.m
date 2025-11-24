@@ -5,6 +5,8 @@
 % The goal of this code is to simulate scattering problems in a rotating
 % frame of reference and predict the excited fields and how they behave in
 % a through rotation.
+clear all
+fact = 1
 
 %% Generate scenario parameters
 
@@ -12,7 +14,7 @@ params.te = 0;
 params.tm = 1;
 
 eps_vec = [11.4]; %epsilon of the scatterer
-radius_vec = [1/10];%radius of scatterer in terms of wavelengths
+radius_vec = [1/20];%radius of scatterer in terms of wavelengths
 params.Iz = 1; % single source radiating current
 
 params.multiscatterer = 1;
@@ -35,7 +37,7 @@ load('arraypoints.mat')
 
 params.sca_x = ArrayPoints(:,1)*1e-6;
 params.sca_y = ArrayPoints(:,2)*1e-6;
-
+params.lambda = 1e-6;
 generate_parameters;
 
 
@@ -45,8 +47,26 @@ generate_parameters;
 
 params.sca_x = ArrayPoints(:,1).'*1e-6*0.75;
 params.sca_y = ArrayPoints(:,2).'*1e-6*0.75;
-params.OMEGA_vec = 0;
+% params.sca_y = params.sca_y
+% params.sca_x = (-5:(1/2*0.75):5)*1e-6;
+% params.sca_y = (0:(1/2*0.75):3)*1e-6;
+% [params.sca_x,params.sca_y] = meshgrid(params.sca_x,params.sca_y);
+% params.sca_x = params.sca_x(:).';
+% params.sca_y = params.sca_y(:).';
+% params.sca_y = params.sca_y - mean(params.sca_y);
+% figure;
+% scatter(params.sca_x,params.sca_y); hold on;
+% scatter( params.source_loc_x,  params.source_loc_y);
+% scatter( obsereved_point(1,:), obsereved_point(2,:));
+% grid minor
+% params.sca_x = ArrayPoints(:,1).'*1e-6*1;
+% params.sca_y = ArrayPoints(:,2).'*1e-6*1;
+
+params.OMEGA_vec = 1*1e-5 * params.omega;
 params.shift_vec = 0;
+
+params.shift_x = 0;
+params.shift_y = 10*params.lambda;
 
 dis = 3;
 sources = dis  * exp(1i*2*pi*linspace(0,1, 5));
@@ -60,9 +80,11 @@ counter = 0;
 total_runs = length(params.shift_vec)*length(params.OMEGA_vec)*length(sources);
 
 params.wavelengths = (0.2:0.005:3.8)*1e-6; %[meters] %wavelength of radiation
+params.wavelengths = (0.50:0.005:1.4)*1e-6; %[meters] %wavelength of radiation
 obsereved_point = [-3,0,3;5,5,5]*1e-6;
-    obsereved_point = [-3,0,3;5,5,5]* 1e-6;
-    obsereved_point = [-3,0,3,;5,5,5 ]* 1e-6;
+obsereved_point = [-3,0,3;5,5,5]* 1e-6;
+obsereved_point = [-0,0,0,;5,5,5 ]* 1e-6 * fact;
+% obsereved_point = [-3,0,3,;5,-5,5 ]* 1e-6;
 E_sol = zeros(length(obsereved_point),length(params.wavelengths));
 E_hit = zeros(length(obsereved_point),length(params.wavelengths));
 for w = 1:length(params.wavelengths)
@@ -73,7 +95,7 @@ for w = 1:length(params.wavelengths)
 
 
     for t = 1:length(sources) % for every source
-        dis = 3*1e-6;
+        dis = 5*1e-6*fact;
         sources = dis  * exp(1i*2*pi*linspace(0,1, 5));
         sources = sources(end-1);
         params.source_loc_x = real(sources(t));
@@ -132,7 +154,16 @@ end
 
 
 now_str = datestr(now,'mmmm_dd_yyyy_HH_MM_SS');
-figure; plot(params.wavelengths,10*log10(abs(E_hit(:,:)+E_sol(:,:))./abs(E_hit(:,:))));
+figure(100);
+plot(params.wavelengths,10*log10(abs(E_hit(2,:)+E_sol(2,:))./abs(E_hit(2,:))));
+hold on;
+grid on;
+
+    figure;
+scatter(params.sca_x,params.sca_y); hold on;
+scatter( params.source_loc_x,  params.source_loc_y,'x');
+scatter( obsereved_point(1,:), obsereved_point(2,:));
+grid minor
 
 if (params.tm)
     TM_alpha_presentation_fields_multiple;

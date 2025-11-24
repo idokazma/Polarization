@@ -51,7 +51,7 @@ end
 if (params.te)
     
     %E_inc_z = exp(-1i*k0*params.X);
-    params.H_inc_z = scalar_green([params.source_loc_x;params.source_loc_y],[params.X(:),params.Y(:)]',params.n_out,params.k0,params.c,params.OMEGA);
+    params.H_inc_z = scalar_green([params.source_loc_x;params.source_loc_y],[params.X(:),params.Y(:)]',params,0);
     params.H_inc_z = reshape(params.H_inc_z,length(params.X),[]);
     params.H_inc_x = 0*params.H_inc_z;
     params.H_inc_y = 0*params.H_inc_z;
@@ -59,7 +59,7 @@ if (params.te)
     %     H_inc_y = 1i/(omega*(mu0*mr_out))*(-1i*k0*exp(-1i*k0*params.X));
     %     H_inc_x = 0*(H_inc_y);
     %     H_inc_z = 0*(H_inc_y);
-    [params.E_inc_x,params.E_inc_y] = dyiadic_green([params.source_loc_x;params.source_loc_y],[params.X(:),params.Y(:)]',params.n_out,params.k0, c,params.OMEGA);
+    [params.E_inc_x,params.E_inc_y] = dyiadic_green([params.source_loc_x;params.source_loc_y],[params.X(:),params.Y(:)]',params,0);
     params.E_inc_x = reshape(1i/(params.omega*(params.e0*params.er_out))*params.E_inc_x,length(params.X),[]);
     params.E_inc_y = reshape(1i/(params.omega*(params.e0*params.er_out))*params.E_inc_y,length(params.X),[]);
     params.E_inc_z = 0*params.E_inc_y;

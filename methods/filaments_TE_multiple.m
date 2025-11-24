@@ -94,8 +94,8 @@ if (false)
         E_inc(i,:) = double(subs(params.Esym,[xsym,ysym,k0sym] ,[test_point_total(i,1),test_point_total(i,2),k0]));
         H_inc(i,:) = double(subs(params.Hsym,[xsym,ysym,zsym,k0sym] ,[test_point_total(i,1),test_point_total(i,2),0,k0]));
         
-        %     E_inc_green = scalar_green([params.source_loc_x;params.source_loc_y],test_point_total',params.n_out,params.k0,params.c,params.OMEGA);
-        %     [H_inc_green_x , H_inc_green_y] = dyiadic_green([params.source_loc_x;params.source_loc_y],test_point_total',params.n_out,params.k0, c,params.OMEGA);
+        %     E_inc_green = scalar_green([params.sources_v2_x;params.sources_v2_y],test_point_total',params.n_out,params.k0,params.c,params.OMEGA);
+        %     [H_inc_green_x , H_inc_green_y] = dyiadic_green([params.sources_v2_x;params.sources_v2_y],test_point_total',params.n_out,params.k0, c,params.OMEGA);
         %
     end
     disp ('End Eval Symbolic');
@@ -121,8 +121,8 @@ if (params.is_plane_wave == 1)
     
 else
     
-    H_inc_green = scalar_green([params.source_loc_x;params.source_loc_y],test_point_total',params.n_out,params.k0,params.c,params.OMEGA);
-    [E_inc_green_x , E_inc_green_y] = dyiadic_green([params.source_loc_x;params.source_loc_y],test_point_total',params.n_out,params.k0, c,params.OMEGA);
+    H_inc_green = scalar_green([params.sources_v2_x;params.sources_v2_y],test_point_total',params,0);
+    [E_inc_green_x , E_inc_green_y] = dyiadic_green([params.sources_v2_x;params.sources_v2_y],test_point_total',params,0);
     E_inc_green_x = -1 * E_inc_green_x*1./(1i*params.omega*(params.e0*params.er_out));
     E_inc_green_y = -1 * E_inc_green_y*1./(1i*params.omega*(params.e0*params.er_out));
     
@@ -145,16 +145,16 @@ for i=1:length(test_point_total)
     
     for j=1:length(filaments_total)
         if (test_point_total(i,3) == filaments_total(j,3) && filaments_total(j,4) == 0) %% we are talking on the same scatterer and test point, and the filaments is outside the sca
-            MHz(i,j) = -1i*omega*(e0*er_in)*scalar_green(filaments_total(j,1:2)',test_point_xy',n_in,k0,c,OMEGA);
-            [Gx,Gy] =  dyiadic_green(filaments_total(j,1:2)',test_point_xy',n_in,k0,c,params.OMEGA);
+            MHz(i,j) = -1i*omega*(e0*er_in)*scalar_green(filaments_total(j,1:2)',test_point_xy',params,1);
+            [Gx,Gy] =  dyiadic_green(filaments_total(j,1:2)',test_point_xy',params,1);
             Gx = -Gx;
             Gy = -Gy;
             sol = cross(nhat,[Gx,Gy,0]);
             MEt(i,j) = -sol(3);%MINUS SIGN
             
         elseif (test_point_total(i,3) == filaments_total(j,3) && filaments_total(j,4) == 1)  %% we are talking on the same scatterer and test point, and the filaments is inside the sca
-            MHz(i,j) = 1i * omega * (e0*er_out) * scalar_green(filaments_total(j,1:2)',test_point_xy',n_out,k0,c,OMEGA);
-            [Gx,Gy] =  dyiadic_green(filaments_total(j,1:2)',test_point_xy',n_out,k0, c,params.OMEGA);
+            MHz(i,j) = 1i * omega * (e0*er_out) * scalar_green(filaments_total(j,1:2)',test_point_xy',params,0);
+            [Gx,Gy] =  dyiadic_green(filaments_total(j,1:2)',test_point_xy',params,0);
             Gx = -Gx;
             Gy = -Gy;
             sol = cross(nhat,[Gx,Gy,0]);
@@ -162,8 +162,8 @@ for i=1:length(test_point_total)
             MEt(i,j) = sol(3);
             
         elseif (test_point_total(i,3) ~= filaments_total(j,3) && filaments_total(j,4) == 1)  %% we are talking on other scatterer and test point, and the filaments is inside the sca
-            MHz(i,j) = 1i * omega * (e0*er_out) * scalar_green(filaments_total(j,1:2)',test_point_xy',n_out,k0,c,OMEGA);
-            [Gx,Gy] = dyiadic_green(filaments_total(j,1:2)',test_point_xy',n_out,k0,c,params.OMEGA);
+            MHz(i,j) = 1i * omega * (e0*er_out) * scalar_green(filaments_total(j,1:2)',test_point_xy',params,0);
+            [Gx,Gy] = dyiadic_green(filaments_total(j,1:2)',test_point_xy',params,0);
             Gx = -Gx;
             Gy = -Gy;
             sol = cross(nhat,[Gx,Gy,0]);
@@ -200,8 +200,8 @@ Ey_sol = H_sol_final_z;
 for tt = 1:length(filaments_total)
     if (filaments_total(tt,4) == 0)
         in_loc_line = [X(grid_inside_each_sca)+params.sca_x(filaments_total(tt,3)),Y(grid_inside_each_sca)+params.sca_y(filaments_total(tt,3))]';
-        H_sol_final_z(filaments_total(tt,3),:) = H_sol_final_z(filaments_total(tt,3),:) + 1i*omega*(e0*er_in)*Im_solution(tt)*scalar_green(filaments_total(tt,1:2)',in_loc_line,n_in,k0,c,OMEGA);
-        [Gx,Gy] =  dyiadic_green(filaments_total(tt,1:2)',in_loc_line,n_in,k0,c,OMEGA);
+        H_sol_final_z(filaments_total(tt,3),:) = H_sol_final_z(filaments_total(tt,3),:) + 1i*omega*(e0*er_in)*Im_solution(tt)*scalar_green(filaments_total(tt,1:2)',in_loc_line,params,1);
+        [Gx,Gy] =  dyiadic_green(filaments_total(tt,1:2)',in_loc_line,params, 1);
         Ex = -Gx*Im_solution(tt);
         Ey = -Gy*Im_solution(tt);
         Ex_sol(filaments_total(tt,3),:) = Ex_sol(filaments_total(tt,3),:) + Ex;
@@ -218,9 +218,9 @@ for mm = 1 : length(params.sca_x)
     in_loc_line = [X(grid_inside_each_sca)+params.sca_x(mm),Y(grid_inside_each_sca)+params.sca_y(mm)]';
     
     for i = 1:length(in_loc_line)
-            H_inc_green_inside(i,:) = scalar_green([params.source_loc_x;params.source_loc_y],[in_loc_line(1,i),in_loc_line(2,i)]',params.n_out,params.k0,params.c,params.OMEGA);
+            H_inc_green_inside(i,:) = scalar_green([params.sources_v2_x;params.sources_v2_y],[in_loc_line(1,i),in_loc_line(2,i)]',params,0);
 
-        [E_inc_green_x_temp , E_inc_green_y_temp] = dyiadic_green([params.source_loc_x;params.source_loc_y],[in_loc_line(1,i),in_loc_line(2,i)]',params.n_out,params.k0, c,params.OMEGA);
+        [E_inc_green_x_temp , E_inc_green_y_temp] = dyiadic_green([params.sources_v2_x;params.sources_v2_y],[in_loc_line(1,i),in_loc_line(2,i)]', params,0);
           E_inc_green_x(i,:) = -1./(1i*params.omega*(params.e0*params.er_out))*E_inc_green_x_temp;
           E_inc_green_y(i,:) = -1./(1i*params.omega*(params.e0*params.er_out))*E_inc_green_y_temp;
 
