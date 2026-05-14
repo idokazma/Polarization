@@ -16,13 +16,30 @@ and produces the final comparison plots. They are invoked via the top-level
 | `multiple_scatterers.m`    | Vogel-spiral array of cylinders; same three-method comparison.                                          | `OMEGA_vec` (shift fixed at 0)           | Uses `GA_generator` for positions. |
 | `block_crystals.m`         | Spectral sweep over a fixed scatterer layout; computes the relative field at three observation points.  | `wavelengths` (no rotation)              | Requires `data/arraypoints.mat` — see `data/README.md`. |
 
+## Overriding defaults
+
+Every scenario function takes an optional `overrides` struct. The defaults
+live in a single `defaults = struct(...)` block at the top of each file;
+`merge_defaults(defaults, overrides)` shallowly overlays the caller's values
+on top. So:
+
+```matlab
+>> main('single', struct('lambda', 0.8e-6))
+>> single_scatterer(struct('omega_factors', 0, 'n_sources', 1))
+```
+
+Fields not present in `overrides` keep their default values. To see what
+knobs a scenario exposes, open the file and read the `defaults` block — it
+is the canonical list.
+
 ## Adding a new example
 
-1. Create `examples/my_scenario.m` as a function (no input args).
-2. Populate the `params` struct (lambda, geometry, sca_x/sca_y, source, sweep
-   vectors) and call `params = generate_parameters(params)`.
-3. Loop over your sweep, calling `generate_plane_wave` or `generate_source_wave`
-   followed by `eval_TM_results(params)`, accumulating into a results cell array.
+1. Create `examples/my_scenario.m` as `function my_scenario(overrides)`.
+2. Build a `defaults = struct(...)` with every tweakable value, then
+   `cfg = merge_defaults(defaults, overrides);`.
+3. Populate the `params` struct from `cfg`, call
+   `params = generate_parameters(params)`, then loop over your sweep calling
+   `eval_TM_results(params)` and accumulating into a results cell array.
 4. Hand the results to `plot_fil_mom_pol(results)` and/or
    `TM_alpha_presentation_fields(results)`.
 5. Add a case branch to `main.m` so it can be dispatched by name.

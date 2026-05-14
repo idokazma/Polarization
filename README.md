@@ -38,6 +38,21 @@ the repo root and call `main(...)` — no manual `addpath` needed.
 The `blockcrystals` target requires `data/arraypoints.mat`, which is not
 checked in. See `data/README.md` for how to provide or regenerate it.
 
+### Overriding parameters
+
+Each scenario exposes its defaults at the top of its file. Pass a struct as a
+second argument to `main` (or directly to the scenario function) to override
+any of them:
+
+```matlab
+>> main('single', struct('lambda', 0.8e-6, 'omega_factors', 0))
+>> main('multiple', struct('n_scatterers', 20, 'eps_vec', 4))
+>> main('blockcrystals', struct('wavelengths', (0.5:0.01:1.5)*1e-6))
+```
+
+Fields you don't list keep their default values. The full list of knobs is
+the `defaults = struct(...)` block at the top of each `examples/*.m` file.
+
 ## What the code does
 
 For each configuration (wavelength, scatterer layout, rotation rate Ω,
