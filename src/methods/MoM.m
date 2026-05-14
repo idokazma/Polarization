@@ -39,7 +39,7 @@ Y = params.Y;
 
 
 delta_eps = params.er_in - params.er_out;
-% scattereres (loc) = delta_eps+epsilon_bg;
+% scatterers (loc) = delta_eps+epsilon_bg;
 
 loc =find(sqrt((X_mom).^2 + (Y_mom).^2)<params.radius);
 
@@ -128,9 +128,9 @@ Xsym = [xsym ysym zsym];
 % figure; imagesc(real(E_bg_st)); set(gca,'YDir','normal'); axis equal;
 
 %% scatter gen
-% scattereres = (epsilon_bg+delta_eps)*ones(size(scatterers_y));
+% scatterers = (epsilon_bg+delta_eps)*ones(size(scatterers_y));
 
-scattereres = (epsilon_bg+delta_eps)*ones(size(scatterers_y));
+scatterers = (epsilon_bg+delta_eps)*ones(size(scatterers_y));
 
 %
 % center = [0,0];
@@ -149,8 +149,8 @@ scattereres = (epsilon_bg+delta_eps)*ones(size(scatterers_y));
 
 
 
-% scattereres (3,3) = 2;
-% scattereres (3,500) = 2;
+% scatterers (3,3) = 2;
+% scatterers (3,500) = 2;
 
 %  E_bg_dy_line = reshape(E_bg_dy,1,[]);
 %  E_bg_st_line = reshape(E_bg_st,1,[]);
@@ -158,10 +158,10 @@ scattereres = (epsilon_bg+delta_eps)*ones(size(scatterers_y));
 E_bg_dy_line = E_bg_dy(:);
 E_bg_st_line = E_bg_st(:);
 
-scattereres_line = reshape(scattereres,1,[]);
+scatterers_line = reshape(scatterers,1,[]);
 
-scatter_ind = find(scattereres_line~=epsilon_bg);
-scatter_bg = find(scattereres_line==epsilon_bg);
+scatter_ind = find(scatterers_line~=epsilon_bg);
+scatter_bg = find(scatterers_line==epsilon_bg);
 
 %% solve for scatteres
 % h = waitbar(0,'Good things happen for those who wait...');

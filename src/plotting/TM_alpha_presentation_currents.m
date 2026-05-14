@@ -1,5 +1,17 @@
-%fields only
-clear Iz Iez Hx Hy Ez Im_x Im_y Ez_sol Hx_sol Hy_sol field_current temp_field_current_1
+function TM_alpha_presentation_currents(results)
+% TM_alpha_presentation_currents  Post-process results from eval_TM_results
+% (rebuilds the legacy cell arrays) and produces the current-based
+% polarizability comparison plots.
+%
+% Input:
+%   results : cell array { i, j, t } of structs from eval_TM_results.
+
+[ni, nj, nt] = size(results);
+field_current_mat_output = cell(ni, nj, nt);
+for ii = 1:ni, for jj = 1:nj, for tt = 1:nt
+    field_current_mat_output{ii,jj,tt} = results{ii,jj,tt}.filaments.field_current_mat;
+end, end, end %#ok<ALIGN>
+params = results{1,1,1}.params;
 
 for rho = 1 : size(field_current_mat_output,1)
     for OMEGA_r = 1 : size(field_current_mat_output,2)
@@ -332,3 +344,4 @@ figure;
 plot(params.OMEGA_vec/params.omega, abs(alpha_TM_MoM),'d-');
 grid on;
 
+end

@@ -1,6 +1,33 @@
+function TM_alpha_presentation_fields(results)
+% TM_alpha_presentation_fields  Post-process results from eval_TM_results into
+% the cell-array layout this presentation logic was originally written for,
+% then run the regression fits and produce the comparison plots.
+%
+% Input:
+%   results : cell array { i, j, t } of structs returned by eval_TM_results.
+
+[ni, nj, nt] = size(results);
+
+field_current_mat_output   = cell(ni, nj, nt);
+E_SOL_st_MoM_MEAN_PLANE_E0 = cell(ni, nj, nt);
+E_SOL_st_MoM_MEAN_PLANE    = cell(ni, nj, nt);
+
+for ii = 1:ni
+    for jj = 1:nj
+        for tt = 1:nt
+            r = results{ii,jj,tt};
+            field_current_mat_output{ii,jj,tt} = r.filaments.field_current_mat;
+            if isfield(r.mom, 'mean_E0'), E_SOL_st_MoM_MEAN_PLANE_E0{ii,jj,tt} = r.mom.mean_E0; end
+            if isfield(r.mom, 'mean_E'),  E_SOL_st_MoM_MEAN_PLANE{ii,jj,tt}    = r.mom.mean_E;  end
+        end
+    end
+end
+
+% The legacy body below expects a `params` variable in scope.
+params = results{1,1,1}.params;
+
 %fields only
-clear Iz Iez Hx Hy Ez Im_x Im_y Ez_sol Hx_sol Hy_sol field_current temp_field_current_1
-stm = []
+stm = [];
 for rho = 1 : size(field_current_mat_output,1)
     for OMEGA_r = 1 : size(field_current_mat_output,2)
         for sce = 1 :  size(field_current_mat_output,3)
@@ -626,3 +653,4 @@ subplot(3,3,4); plot(params.OMEGA_vec/params.omega,abs(alpha_curr_hxjy),'x-','Li
 subplot(3,3,2); plot(params.OMEGA_vec/params.omega,abs(alpha_curr_hyjx),'x-','LineWidth',2); title ('abs($$\alpha^{h\theta}_{j\rho}$$)','Interpreter','Latex', 'FontSize', 16); xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
 subplot(3,3,3); plot(params.OMEGA_vec/params.omega,abs(alpha_curr_ezjx),'x-','LineWidth',2); title ('abs($$\alpha^{ez}_{j\rho}$$)','Interpreter','Latex', 'FontSize', 16); xlabel ('\Omega/\omega', 'FontSize', 16); grid on; grid minor;
 
+end
