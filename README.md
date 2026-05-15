@@ -2,10 +2,18 @@
 
 **2D simulation of polarizability in a rotating reference frame.**
 
-MATLAB code accompanying a Master's thesis by Ido Kazma at Tel Aviv University,
+Code accompanying a Master's thesis by Ido Kazma at Tel Aviv University,
 under the supervision of Prof. Ben Z. Steinberg. The numerics support the
 analytic results derived in
 [Steinberg, Shamir & Boag, "Rotating Green's function for 2D problems" (PRE)](https://www.eng.tau.ac.il/~steinber/papers_ps/RotatingG_PRE_SteinbergShamirBoag.pdf).
+
+The repository contains two parallel implementations of the same simulation:
+
+- **Python** (`polarization/`) — the primary, actively developed stack. Pure
+  NumPy / SciPy / matplotlib, no symbolic dependency. Get started below.
+- **MATLAB** (`main.m`, `src/`, `examples/`) — the original reference
+  implementation. Kept in-tree as a numerical benchmark; see the "MATLAB"
+  section further down.
 
 The repository simulates electromagnetic scattering from one or more
 dielectric cylinders that rotate together with the reference frame, and
@@ -14,14 +22,65 @@ extracts the effective polarizability tensor — comparing a closed-form
 (Method of Moments and the Filament method) and, where applicable, against
 the analytical Mie series.
 
-## Requirements
+## Python: quick start
+
+```bash
+pip install -e .
+python -m polarization single
+python -m polarization multiple
+python -m polarization blockcrystals       # needs data/arraypoints.mat
+```
+
+Run with overrides (values are parsed as JSON):
+
+```bash
+python -m polarization single \
+    --override lambda_=8e-7 \
+    --override 'omega_factors=[-3e-5, 0, 3e-5]'
+
+python -m polarization multiple \
+    --override n_scatterers=20 \
+    --override er_in=4
+```
+
+Or import the API directly:
+
+```python
+from polarization import SimParams, generate_parameters, eval_tm_results
+from polarization.sources import generate_source_wave
+import numpy as np
+
+p = SimParams(lambda_=1e-6, len=0.5e-6, wid=0.5e-6, len_n=61, wid_n=61, tm=1)
+p = generate_parameters(p)
+p.radius = 1e-8
+p.sca_x = np.array([0.0]); p.sca_y = np.array([0.0])
+p.source_loc_x, p.source_loc_y = 1e-4, 0.0
+p = generate_source_wave(p)
+r = eval_tm_results(p)
+print(r.pol.alpha, r.filaments.alpha)
+```
+
+Run the test suite:
+
+```bash
+pip install -e .[dev]
+pytest
+```
+
+## MATLAB
+
+The original MATLAB code (`main.m`, `src/`, `examples/`) is preserved as the
+numerical reference. The Python port reproduces the same four methods and the
+same example scenarios.
+
+### MATLAB requirements
 
 - MATLAB R2018b or newer (uses `isfile`, `isscalar`, the Symbolic Math Toolbox
   for the symbolic source representations in `src/sources/`).
 - The Symbolic Math Toolbox is only needed by the symbolic blocks in
   `generate_plane_wave` / `generate_source_wave`; the numerics work without it.
 
-## Quick start
+### MATLAB quick start
 
 From MATLAB at the repository root:
 
